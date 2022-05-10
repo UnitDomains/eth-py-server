@@ -32,8 +32,8 @@ class PublicResolverContractEvent(EnsContractEvent):
                 self.ERC20.events.TextChanged]
 
     def get_state(self):
-        return PublicResolverProcessEvent()
+        return PublicResolverProcessEvent(self.network_id)
 
     def get_filters(self):
-        address = AddressConfigure()
+        address = AddressConfigure(self.network_id)
         return {"address": address.get_public_resolver_contract_address()}

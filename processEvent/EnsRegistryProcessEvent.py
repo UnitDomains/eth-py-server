@@ -87,12 +87,14 @@ class EnsRegistryProcessEvent(ProcessEventImpl):
 
         if event.event == 'NewOwner':
             insert_ens_registry_event_new_owner(
+                self.network_id,
                 '0x' + process_event_data['node'].hex(),
                 '0x' + process_event_data['label'].hex(),
                 process_event_data['owner'],
                 process_event_data['timestamp'])
         elif event.event == 'Transfer':
             insert_ens_registry_event_transfer(
+                self.network_id,
                 '0x' + process_event_data['node'].hex(),
                 process_event_data['owner'],
                 process_event_data['timestamp'])

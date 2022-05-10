@@ -4,7 +4,7 @@ from database.database import conn, cur
 from database.utils import get_uuid
 
 
-def insert_subdomain_registrar_event_new_subdomain_registration(label, sub_domain,sub_node_label, owner,timestamp):
+def insert_subdomain_registrar_event_new_subdomain_registration(network_id,label, sub_domain,sub_node_label, owner,timestamp):
     """
     event NewSubdomainRegistration(
                 bytes32 indexed label,
@@ -15,14 +15,24 @@ def insert_subdomain_registrar_event_new_subdomain_registration(label, sub_domai
     :return:
     """
 
-    delete_subdomain_registrar_event_new_subdomain_registration(label,sub_node_label)
+    delete_subdomain_registrar_event_new_subdomain_registration(network_id,label,sub_node_label)
 
-    sql = "INSERT INTO subdomain_registrar_event_new_subdomain_registration(pk_id,label,sub_domain,sub_node_label,owner,timestamp) values (%s,%s,%s,%s,%s,%s)"
-    param = (get_uuid(), label, sub_domain,sub_node_label, owner,timestamp)
+    sql = """
+        INSERT INTO subdomain_registrar_event_new_subdomain_registration(
+            pk_id,
+            network_id,
+            label,
+            sub_domain,
+            sub_node_label,
+            owner,
+            timestamp) 
+        VALUES (%s,%s,%s,%s,%s,%s,%s)
+    """
+    param = (get_uuid(), network_id,label, sub_domain,sub_node_label, owner,timestamp)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -34,18 +44,21 @@ def insert_subdomain_registrar_event_new_subdomain_registration(label, sub_domai
         conn.rollback()
 
 
-def insert_subdomain_registrar_event_delete_subdomain(label, sub_node_label, timestamp):
+def insert_subdomain_registrar_event_delete_subdomain(network_id,label, sub_node_label, timestamp):
     """
      event DeleteSubdomain(bytes32 indexed node, bytes32 indexed label);
     :return:
     """
 
-    sql = "DELETE FROM subdomain_registrar_event_new_subdomain_registration WHERE label=%s and sub_node_label=%s"
-    param = (label, sub_node_label)
+    sql = """
+        DELETE FROM subdomain_registrar_event_new_subdomain_registration 
+        WHERE network_id=%s AND label=%s AND sub_node_label=%s
+        """
+    param = (network_id,label, sub_node_label)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -57,18 +70,21 @@ def insert_subdomain_registrar_event_delete_subdomain(label, sub_node_label, tim
         conn.rollback()
 
 
-def delete_subdomain_registrar_event_new_subdomain_registration(label,sub_node_label):
+def delete_subdomain_registrar_event_new_subdomain_registration(network_id,label,sub_node_label):
     """
 
     :return:
     """
 
-    sql = "DELETE FROM subdomain_registrar_event_new_subdomain_registration WHERE label=%s and sub_node_label=%s"
-    param = (label,sub_node_label)
+    sql = """
+        DELETE FROM subdomain_registrar_event_new_subdomain_registration 
+        WHERE network_id=%s AND label=%s AND sub_node_label=%s
+        """
+    param = (network_id,label,sub_node_label)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -91,7 +107,7 @@ def is_exist_phrase(word):
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         cur.execute(sql)

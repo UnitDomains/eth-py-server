@@ -30,8 +30,8 @@ class BaseRegistarContractEvent(EnsContractEvent):
         ]
 
     def get_state(self):
-        return BaseRegistarProcessEvent()
+        return BaseRegistarProcessEvent(self.network_id)
 
     def get_filters(self):
-        address = AddressConfigure()
+        address = AddressConfigure(self.network_id)
         return {"address": address.get_base_registar_contract_address()}

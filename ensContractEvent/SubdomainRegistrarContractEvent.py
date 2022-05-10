@@ -23,8 +23,8 @@ class SubdomainRegistrarContractEvent(EnsContractEvent):
                ]
 
     def get_state(self):
-        return SubdomainRegistrarProcessEvent()
+        return SubdomainRegistrarProcessEvent(self.network_id)
 
     def get_filters(self):
-        address = AddressConfigure()
+        address = AddressConfigure(self.network_id)
         return {"address": address.get_subdomain_registrar_contract_address()}

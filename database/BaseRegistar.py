@@ -4,18 +4,21 @@ from database.database import conn, cur
 from database.utils import get_uuid
 
 
-def insert_base_registrar_event_name_registered(id, owner, expires, timestamp):
+def insert_base_registrar_event_name_registered( network_id,id, owner, expires, timestamp):
     """
-    插入
+
     :return:
     """
     delete_base_registrar_event_name_registered(id)
-    sql = "INSERT INTO base_registrar_event_name_registered(pk_id,id,owner,expires,timestamp) values (%s,%s,%s,%s,%s)"
-    param = (get_uuid(), id, owner, expires, timestamp)
+    sql = """
+        INSERT INTO base_registrar_event_name_registered(pk_id,network_id,id,owner,expires,timestamp) 
+        VALUES (%s,%s,%s,%s,%s,%s)
+    """
+    param = (get_uuid(), network_id,id, owner, expires, timestamp)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -27,21 +30,21 @@ def insert_base_registrar_event_name_registered(id, owner, expires, timestamp):
         conn.rollback()
 
 
-def update_base_registrar_event_name_renewed(id, expires, timestamp):
+def update_base_registrar_event_name_renewed(network_id,id, expires, timestamp):
     """
-    更新域名
+
     :return:
     """
 
     """
     delete_base_registrar_event_name_renewed(id);
     """
-    sql = "UPDATE base_registrar_event_name_registered SET expires =%s WHERE id=%s"
-    param = (expires, id)
+    sql = "UPDATE base_registrar_event_name_registered SET expires =%s WHERE network_id=%s AND  id=%s"
+    param = (expires, network_id,id)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -53,7 +56,7 @@ def update_base_registrar_event_name_renewed(id, expires, timestamp):
         conn.rollback()
 
 
-def insert_base_registrar_event_transfer(
+def insert_base_registrar_event_transfer(network_id,
         from_addr, to_addr, tokenId, timestamp):
     """
     处理Transfer事件
@@ -63,12 +66,15 @@ def insert_base_registrar_event_transfer(
     """
     delete_base_registrar_event_transfer(tokenId)
 
-    sql = "INSERT INTO base_registrar_event_transfer(pk_id,from_addr,to_addr,tokenId,timestamp) values (%s,%s,%s,%s,%s)"
-    param = (get_uuid(), from_addr, to_addr, tokenId, timestamp)
+    sql = """
+        INSERT INTO base_registrar_event_transfer(pk_id,network_id,from_addr,to_addr,tokenId,timestamp) 
+        VALUES (%s,%s,%s,%s,%s,%s)
+        """
+    param = (get_uuid(),network_id, from_addr, to_addr, tokenId, timestamp)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -80,19 +86,19 @@ def insert_base_registrar_event_transfer(
         conn.rollback()
 
 
-def delete_base_registrar_event_name_registered(id):
+def delete_base_registrar_event_name_registered(network_id,id):
     """
     处理Transfer事件
     删除tokenid记录
     :return:
     """
 
-    sql = "DELETE FROM base_registrar_event_name_registered WHERE id=%s"
-    param = (id)
+    sql = "DELETE FROM base_registrar_event_name_registered WHERE network_id=%s AND id=%s"
+    param = (network_id,id)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -104,19 +110,19 @@ def delete_base_registrar_event_name_registered(id):
         conn.rollback()
 
 
-def delete_base_registrar_event_name_renewed(id):
+def delete_base_registrar_event_name_renewed(network_id,id):
     """
     处理Transfer事件
     删除tokenid记录
     :return:
     """
 
-    sql = "DELETE FROM base_registrar_event_name_renewed WHERE id=%s"
-    param = (id)
+    sql = "DELETE FROM base_registrar_event_name_renewed WHERE network_id=%s AND id=%s"
+    param = (network_id,id)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -128,7 +134,7 @@ def delete_base_registrar_event_name_renewed(id):
         conn.rollback()
 
 
-def delete_base_registrar_event_transfer(tokenId):
+def delete_base_registrar_event_transfer(network_id,tokenId):
     """
     处理Transfer事件
     删除tokenid记录
@@ -136,12 +142,12 @@ def delete_base_registrar_event_transfer(tokenId):
     """
 
 
-    sql = "DELETE FROM base_registrar_event_transfer WHERE tokenId=%s"
-    param = (tokenId)
+    sql = "DELETE FROM base_registrar_event_transfer WHERE network_id=%s AND tokenId=%s"
+    param = (network_id,tokenId)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -161,7 +167,7 @@ def is_exist_phrase(word):
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         cur.execute(sql)

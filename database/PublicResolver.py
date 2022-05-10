@@ -4,7 +4,7 @@ from database.database import conn, cur
 from database.utils import get_uuid
 
 
-def insert_public_resolver_event_addr_changed(node, addr, timestamp):
+def insert_public_resolver_event_addr_changed(network_id,node, addr, timestamp):
     """
     event AddrChanged(bytes32 indexed node, address addr);
     :return:
@@ -12,12 +12,15 @@ def insert_public_resolver_event_addr_changed(node, addr, timestamp):
 
     delete_public_resolver_event_addr_changed(node)
 
-    sql = "INSERT INTO public_resolver_event_addr_changed(pk_id,node,addr,timestamp) values (%s,%s,%s,%s)"
-    param = (get_uuid(), node, addr, timestamp)
+    sql = """
+    INSERT INTO public_resolver_event_addr_changed(pk_id,network_id,node,addr,timestamp) 
+    VALUES (%s,%s,%s,%s,%s)
+    """
+    param = (get_uuid(), network_id,node, addr, timestamp)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -29,7 +32,7 @@ def insert_public_resolver_event_addr_changed(node, addr, timestamp):
         conn.rollback()
 
 
-def insert_public_resolver_event_name_changed(node, name, timestamp):
+def insert_public_resolver_event_name_changed(network_id,node, name, timestamp):
     """
     event NameChanged(bytes32 indexed node, string name);
     :return:
@@ -37,12 +40,15 @@ def insert_public_resolver_event_name_changed(node, name, timestamp):
 
     delete_public_resolver_event_name_changed(node)
 
-    sql = "INSERT INTO public_resolver_event_name_changed(pk_id,node,name,timestamp) values (%s,%s,%s,%s)"
-    param = (get_uuid(), node, name, timestamp)
+    sql = """
+    INSERT INTO public_resolver_event_name_changed(pk_id,network_id,node,name,timestamp) 
+    VALUES (%s,%s,%s,%s,%s)
+    """
+    param = (get_uuid(), network_id,node, name, timestamp)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -54,18 +60,21 @@ def insert_public_resolver_event_name_changed(node, name, timestamp):
         conn.rollback()
 
 
-def delete_public_resolver_event_addr_changed(node):
+def delete_public_resolver_event_addr_changed(network_id,node):
     """
 
     :return:
     """
 
-    sql = "DELETE FROM public_resolver_event_addr_changed WHERE node=%s"
-    param = (node)
+    sql = """
+    DELETE FROM public_resolver_event_addr_changed 
+    WHERE network_id=%s AND node=%s
+    """
+    param = (network_id,node)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -77,18 +86,21 @@ def delete_public_resolver_event_addr_changed(node):
         conn.rollback()
 
 
-def delete_public_resolver_event_name_changed(node):
+def delete_public_resolver_event_name_changed(network_id,node):
     """
 
     :return:
     """
 
-    sql = "DELETE FROM public_resolver_event_name_changed WHERE node=%s"
-    param = (node)
+    sql = """
+    DELETE FROM public_resolver_event_name_changed 
+    WHERE network_id=%s AND node=%s
+    """
+    param = (network_id,node)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -109,7 +121,7 @@ def is_exist_phrase(word):
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         cur.execute(sql)

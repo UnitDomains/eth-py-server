@@ -100,6 +100,7 @@ class ETHRegistrarControllerProcessEvent(ProcessEventImpl):
 
         if event.event == 'NameRegistered':
             insert_eth_registrar_controller_event_name_registered(
+                self.network_id,
                 process_event_data['name'],
                 '0x' + process_event_data['label'].hex(),
                 process_event_data['owner'],
@@ -109,7 +110,9 @@ class ETHRegistrarControllerProcessEvent(ProcessEventImpl):
                 process_event_data['timestamp'])
         '''
         elif event.event == 'NameRenewed':
-            insert_eth_registrar_controller_event_name_renewed(process_event_data['name'],
+            insert_eth_registrar_controller_event_name_renewed(
+                                                                self.network_id,
+                                                                process_event_data['name'],
                                                                '0x' + process_event_data['label'].hex(),
                                                                process_event_data['cost'],
                                                                process_event_data['expires'],
@@ -118,7 +121,9 @@ class ETHRegistrarControllerProcessEvent(ProcessEventImpl):
 
 
         elif event.event == 'OwnershipTransferred':
-            insert_eth_registrar_controller_event_ownership_transferred(process_event_data['previousOwner'],
+            insert_eth_registrar_controller_event_ownership_transferred(
+            self.network_id,
+            process_event_data['previousOwner'],
                                                                  process_event_data['newOwner'],
                                                                  process_event_data['timestamp'])
                                                                  '''

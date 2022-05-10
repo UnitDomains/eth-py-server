@@ -24,9 +24,9 @@ class LinearPremiumPriceOracleContractEvent(EnsContractEvent):
                 self.ERC20.events.RentPriceChanged]
 
     def get_state(self):
-        return LinearPremiumPriceOracleProcessEvent()
+        return LinearPremiumPriceOracleProcessEvent(self.network_id)
 
     def get_filters(self):
-        address = AddressConfigure()
+        address = AddressConfigure(self.network_id)
         return {
             "address": address.get_liner_preminum_price_oracle_contract_address()}

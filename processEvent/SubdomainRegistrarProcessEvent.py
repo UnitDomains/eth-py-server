@@ -56,6 +56,7 @@ class SubdomainRegistrarProcessEvent(ProcessEventImpl):
         if event.event == 'DeleteSubdomain':
             #  event DeleteSubdomain(bytes32 indexed node, bytes32 indexed label);
             insert_subdomain_registrar_event_delete_subdomain(
+                self.network_id,
                 '0x' + process_event_data['node'].hex(),
                 '0x' + process_event_data['label'].hex(),
                 process_event_data['timestamp'])
@@ -63,6 +64,7 @@ class SubdomainRegistrarProcessEvent(ProcessEventImpl):
         elif event.event == 'NewSubdomainRegistration':
             '''
             event NewSubdomainRegistration(
+             self.network_id,
                 bytes32 indexed label,
                 string subdomain,
                 bytes32 indexed subdomainLabel,
@@ -71,6 +73,7 @@ class SubdomainRegistrarProcessEvent(ProcessEventImpl):
             '''
 
             insert_subdomain_registrar_event_new_subdomain_registration(
+                self.network_id,
                 '0x' + process_event_data['label'].hex(),
                 process_event_data['subdomain'],
                 '0x' + process_event_data['subdomainLabel'].hex(),

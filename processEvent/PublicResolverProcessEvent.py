@@ -193,6 +193,7 @@ class PublicResolverProcessEvent(ProcessEventImpl):
         if event.event == 'AddrChanged':
             # event AddrChanged(bytes32 indexed node, address a);
             insert_public_resolver_event_addr_changed(
+                self.network_id,
                 '0x' + process_event_data['node'].hex(),
                 process_event_data['addr'],
                 process_event_data['timestamp'])
@@ -200,6 +201,7 @@ class PublicResolverProcessEvent(ProcessEventImpl):
         elif event.event == 'NameChanged':
             # event NameChanged(bytes32 indexed node, string name);
             insert_public_resolver_event_name_changed(
+                self.network_id,
                 '0x' + process_event_data['node'].hex(),
                 process_event_data['name'],
                 process_event_data['timestamp'])

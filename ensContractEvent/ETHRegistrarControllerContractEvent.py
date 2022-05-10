@@ -23,8 +23,8 @@ class ETHRegistrarControllerContractEvent(EnsContractEvent):
                 self.ERC20.events.OwnershipTransferred]
 
     def get_state(self):
-        return ETHRegistrarControllerProcessEvent()
+        return ETHRegistrarControllerProcessEvent(self.network_id)
 
     def get_filters(self):
-        address = AddressConfigure()
+        address = AddressConfigure(self.network_id)
         return {"address": address.get_eth_registar_contract_address()}

@@ -56,15 +56,35 @@ if __name__ == "__main__":
     # https://pypi.org/project/tqdm/
     from tqdm import tqdm
 
-    def run():
-        # mainnet
+    # mainnet
+    api_url_mainnet = "https://ropsten.infura.io/v3/ec2d05b145c1443c9cca09393955e37c"
+    api_url_mainnet_alchemy = "https://eth-mainnet.alchemyapi.io/v2/CD0O0kdHXToHSvaQrPvN5xRAUTRg0e6_"
 
-        # rospten
-        # api_url = "https://ropsten.infura.io/v3/ec2d05b145c1443c9cca09393955e37c"
+    # rospten
+    api_url_ropsten_infura = "https://ropsten.infura.io/v3/ec2d05b145c1443c9cca09393955e37c"
+    api_url_ropsten_alchemy = "https://eth-ropsten.alchemyapi.io/v2/V8EwUsUS0SCE9FtPYCVPRfC3SnRUy5Vz"
 
-        # rinkeby
-        # api_url = "https://rinkeby.infura.io/v3/ec2d05b145c1443c9cca09393955e37c"
-        api_url = "https://eth-rinkeby.alchemyapi.io/v2/9IzDixNqpQGzIGQBb-YsQYdcLvhnlCB1"
+    # rinkeby
+    api_url_rinkeby_infura = "https://rinkeby.infura.io/v3/ec2d05b145c1443c9cca09393955e37c"
+    api_url_rinkeby_alchemy = "https://eth-rinkeby.alchemyapi.io/v2/9IzDixNqpQGzIGQBb-YsQYdcLvhnlCB1"
+
+    # Goerli
+    api_url_goerli_infura = "https://eth-goerli.alchemyapi.io/v2/ec2d05b145c1443c9cca09393955e37c"
+    api_url_goerli_alchemy="https://eth-goerli.alchemyapi.io/v2/ot41xp6WbmRmqtDREro6ERragj2X7AGb"
+
+
+    def run(api_url):
+        network_id=0
+        if api_url.find('mainnet')>=0:
+            network_id=1
+        elif api_url.find('ropsten')>=0:
+            network_id=3
+        elif api_url.find('rinkeby') >= 0:
+            network_id = 4
+        elif api_url.find('rinkeby') >= 0:
+            network_id = 4
+
+
 
         # Enable logs to the stdout.
         # DEBUG is very verbose level
@@ -91,13 +111,13 @@ if __name__ == "__main__":
         scanner = EventScanner(
             web3=web3,
             state=state,
-            ens_contract_events=[EnsRegistryContractEvent(web3),
-                                 BaseRegistarContractEvent(web3),
-                                 ETHRegistrarControllerContractEvent(web3),
-                                 # LinearPremiumPriceOracleContractEvent(web3),
-                                 PublicResolverContractEvent(web3),
-                                 ReverseRegistrarContractEvent(web3),
-                                 SubdomainRegistrarContractEvent(web3)
+            ens_contract_events=[EnsRegistryContractEvent(web3,network_id),
+                                 BaseRegistarContractEvent(web3,network_id),
+                                 ETHRegistrarControllerContractEvent(web3,network_id),
+                                 # LinearPremiumPriceOracleContractEvent(web3,network_id),
+                                 PublicResolverContractEvent(web3,network_id),
+                                 ReverseRegistrarContractEvent(web3,network_id),
+                                 SubdomainRegistrarContractEvent(web3,network_id)
                                  ],
             # How many maximum blocks at the time we request from JSON-RPC
             # and we are unlikely to exceed the response size limit of the
@@ -156,14 +176,14 @@ if __name__ == "__main__":
         print(
             f"Scanned total {len(result)} Transfer events, in {duration} seconds, total {total_chunks_scanned} chunk scans performed")
 
-    run()
+    run(api_url_rinkeby_alchemy)
 
     def APschedulerMonitor():
         # 创建调度器：BlockingScheduler
         scheduler = BlockingScheduler()
 
         # 添加任务,时间间隔60S
-        scheduler.add_job(run, 'interval', seconds=60, id='scan')
+        scheduler.add_job(run, 'interval', seconds=60, id='scan',args=[api_url_rinkeby_alchemy])
         scheduler.start()
 
     APschedulerMonitor()

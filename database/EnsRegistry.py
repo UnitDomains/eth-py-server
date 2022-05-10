@@ -4,7 +4,7 @@ from database.database import conn, cur
 from database.utils import get_uuid
 
 
-def insert_ens_registry_event_new_owner(node, label, owner, timestamp):
+def insert_ens_registry_event_new_owner(network_id,node, label, owner, timestamp):
     """
     处理NewOwner事件
     1.删除旧记录
@@ -14,11 +14,14 @@ def insert_ens_registry_event_new_owner(node, label, owner, timestamp):
 
     delete_ens_registry_event_new_owner(label)
 
-    sql = "INSERT INTO ens_registry_event_new_owner(pk_id,node,label,owner,timestamp) values (%s,%s,%s,%s,%s)"
-    param = (get_uuid(), node, label, owner, timestamp)
+    sql = """
+        INSERT INTO ens_registry_event_new_owner(pk_id,network_id,node,label,owner,timestamp) 
+        VALUES (%s,%s,%s,%s,%s,%s)
+    """
+    param = (get_uuid(),network_id, node, label, owner, timestamp)
 
     try:
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
 
@@ -31,18 +34,18 @@ def insert_ens_registry_event_new_owner(node, label, owner, timestamp):
         conn.rollback()
 
 
-def delete_ens_registry_event_new_owner(label):
+def delete_ens_registry_event_new_owner(network_id,label):
     """
 
     :return:
     """
 
-    sql = "DELETE FROM ens_registry_event_new_owner WHERE label=%s"
-    param = (label)
+    sql = "DELETE FROM ens_registry_event_new_owner WHERE network_id=%s AND label=%s"
+    param = (network_id,label)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
 
@@ -55,7 +58,7 @@ def delete_ens_registry_event_new_owner(label):
         conn.rollback()
 
 
-def insert_ens_registry_event_transfer(node, owner, timestamp):
+def insert_ens_registry_event_transfer(network_id,node, owner, timestamp):
     """
 
     :return:
@@ -63,12 +66,12 @@ def insert_ens_registry_event_transfer(node, owner, timestamp):
 
     delete_ens_registry_event_transfer(node)
 
-    sql = "INSERT INTO ens_registry_event_transfer(pk_id,node,owner,timestamp) values (%s,%s,%s,%s)"
-    param = (get_uuid(), node, owner, timestamp)
+    sql = "INSERT INTO ens_registry_event_transfer(pk_id,network_id,node,owner,timestamp) VALUES (%s,%s,%s,%s,%s)"
+    param = (get_uuid(), network_id,node, owner, timestamp)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -80,19 +83,19 @@ def insert_ens_registry_event_transfer(node, owner, timestamp):
         conn.rollback()
 
 
-def delete_ens_registry_event_transfer(node):
+def delete_ens_registry_event_transfer(network_id,node):
     """
     处理Transfer事件
     删除tokenid记录
     :return:
     """
 
-    sql = "DELETE FROM ens_registry_event_transfer WHERE node=%s"
-    param = (node)
+    sql = "DELETE FROM ens_registry_event_transfer WHERE network_id=%s AND node=%s"
+    param = (network_id,node)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -113,7 +116,7 @@ def is_exist_phrase(word):
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         cur.execute(sql)

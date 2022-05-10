@@ -140,6 +140,7 @@ class BaseRegistarProcessEvent(ProcessEventImpl):
 
         if event.event == 'Transfer':
             insert_base_registrar_event_transfer(
+                self.network_id,
                 process_event_data['from'],
                 process_event_data['to'],
                 adjust_hex_2_fix_length(
@@ -148,11 +149,14 @@ class BaseRegistarProcessEvent(ProcessEventImpl):
                 process_event_data['timestamp'])
 
         elif event.event == 'NameRenewed':
-            update_base_registrar_event_name_renewed(adjust_hex_2_fix_length(hex(
+            update_base_registrar_event_name_renewed(
+                self.network_id,
+                adjust_hex_2_fix_length(hex(
                 process_event_data['id'])), process_event_data['expires'], process_event_data['timestamp'])
 
         elif event.event == 'NameRegistered':
             insert_base_registrar_event_name_registered(
+                self.network_id,
                 adjust_hex_2_fix_length(
                     hex(
                         process_event_data['id'])),
@@ -163,7 +167,8 @@ class BaseRegistarProcessEvent(ProcessEventImpl):
         elif event.event == 'OwnershipTransferred':
             print(process_event_data['newOwner'])
             '''
-            insert_base_registrar_event_name_registered(              
+            insert_base_registrar_event_name_registered(       
+                self.network_id,       
                 process_event_data['previousOwner'],
                 process_event_data['newOwner'],
                 process_event_data['timestamp'])

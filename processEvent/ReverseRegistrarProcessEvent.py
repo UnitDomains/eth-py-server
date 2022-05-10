@@ -63,5 +63,6 @@ class ReverseRegistrarProcessEvent(ProcessEventImpl):
             event: AttributeDict) -> int:
         if event.event == 'ReverseClaimed':
             # event ReverseClaimed(address indexed addr, bytes32 indexed node);
-            print('0x' + process_event_data['node'].hex())
-            print(process_event_data['addr'])
+            pass
+
+

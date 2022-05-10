@@ -2,11 +2,17 @@ import configparser
 
 
 class AddressConfigure:
-    def __init__(self):
-        self.fname = "config.ini"
+    def __init__(self, network_id):
+        self.fname = "addressConfig.ini"
         con = configparser.ConfigParser()
         con.read(self.fname, encoding='utf-8')
-        items = con.items('address')
+        if network_id == 1:
+            items = con.items('address_mainnet')
+        elif network_id == 3:
+            items = con.items('address_ropsten')
+        elif network_id == 4:
+            items = con.items('address_rinkeby')
+
         self.items = dict(items)
 
     def get_ens_contract_address(self):

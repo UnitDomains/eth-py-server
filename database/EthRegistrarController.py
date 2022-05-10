@@ -4,8 +4,9 @@ from database.database import conn, cur
 from database.utils import get_uuid
 
 
-def insert_eth_registrar_controller_event_name_registered(
-        name, label, owner, cost, expires, baseNodeIndex, timestamp):
+def insert_eth_registrar_controller_event_name_registered(network_id,
+                                                          name, label, owner,
+                                                          cost, expires, baseNodeIndex, timestamp):
     """
 
     :return:
@@ -13,9 +14,22 @@ def insert_eth_registrar_controller_event_name_registered(
 
     delete_eth_registrar_controller_event_name_registered(label)
 
-    sql = "INSERT INTO eth_registrar_controller_event_name_registered(pk_id,name,label,owner,cost,expires,baseNodeIndex,timestamp) values (%s,%s,%s,%s,%s,%s,%s,%s)"
+    sql = """
+        INSERT INTO eth_registrar_controller_event_name_registered(
+            pk_id,
+            network_id,
+            name,
+            label,
+            owner,
+            cost,
+            expires,
+            baseNodeIndex,
+            timestamp) 
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+    """
     param = (
         get_uuid(),
+        network_id,
         name,
         label,
         owner,
@@ -26,7 +40,7 @@ def insert_eth_registrar_controller_event_name_registered(
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -38,19 +52,27 @@ def insert_eth_registrar_controller_event_name_registered(
         conn.rollback()
 
 
-def insert_eth_registrar_controller_event_ownership_transferred(
-        previousOwner, newOwner, timestamp):
+def insert_eth_registrar_controller_event_ownership_transferred(network_id,
+                                                                previousOwner, newOwner, timestamp):
     """
 
     :return:
     """
 
-    sql = "INSERT INTO eth_registrar_controller_event_ownership_transferred(pk_id,previousOwner,newOwner,timestamp) values (%s,%s,%s,%s)"
-    param = (get_uuid(), previousOwner, newOwner, timestamp)
+    sql = """
+        INSERT INTO eth_registrar_controller_event_ownership_transferred(
+            pk_id,
+            network_id,
+            previousOwner,
+            newOwner,
+            timestamp) 
+        VALUES (%s,%s,%s,%s,%s)
+    """
+    param = (get_uuid(), network_id, previousOwner, newOwner, timestamp)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -62,16 +84,27 @@ def insert_eth_registrar_controller_event_ownership_transferred(
         conn.rollback()
 
 
-def insert_eth_registrar_controller_event_name_renewed(
-        name, label, cost, expires, baseNodeIndex, timestamp):
+def insert_eth_registrar_controller_event_name_renewed(network_id,
+                                                       name, label, cost, expires, baseNodeIndex, timestamp):
     delete_eth_registrar_controller_event_name_renewed(label)
 
-    sql = "INSERT INTO eth_registrar_controller_event_name_renewed(pk_id,name,label,cost,expires,baseNodeIndex,timestamp) values (%s,%s,%s,%s,%s,%s,%s)"
-    param = (get_uuid(), name, label, cost, expires, baseNodeIndex, timestamp)
+    sql = """
+        INSERT INTO eth_registrar_controller_event_name_renewed(
+        pk_id,
+        network_id,
+        name,
+        label,
+        cost,
+        expires,
+        baseNodeIndex,
+        timestamp) 
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+        """
+    param = (get_uuid(), network_id, name, label, cost, expires, baseNodeIndex, timestamp)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -83,18 +116,21 @@ def insert_eth_registrar_controller_event_name_renewed(
         conn.rollback()
 
 
-def delete_eth_registrar_controller_event_name_registered(label):
+def delete_eth_registrar_controller_event_name_registered(network_id, label):
     """
 
     :return:
     """
 
-    sql = "DELETE FROM eth_registrar_controller_event_name_registered WHERE label=%s"
-    param = (label)
+    sql = """
+        DELETE FROM eth_registrar_controller_event_name_registered 
+        WHERE network_id=%s AND label=%s
+        """
+    param = (network_id, label)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -106,18 +142,18 @@ def delete_eth_registrar_controller_event_name_registered(label):
         conn.rollback()
 
 
-def delete_eth_registrar_controller_event_ownership_transferred(node):
+def delete_eth_registrar_controller_event_ownership_transferred(network_id, node):
     """
 
     :return:
     """
 
-    sql = "DELETE FROM ens_registry_event_transfer WHERE node=%s"
-    param = (node)
+    sql = "DELETE FROM ens_registry_event_transfer WHERE network_id=%s AND node=%s"
+    param = (network_id, node)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -129,18 +165,18 @@ def delete_eth_registrar_controller_event_ownership_transferred(node):
         conn.rollback()
 
 
-def delete_eth_registrar_controller_event_name_renewed(label):
+def delete_eth_registrar_controller_event_name_renewed(network_id, label):
     """
 
     :return:
     """
 
-    sql = "DELETE FROM eth_registrar_controller_event_name_renewed WHERE label=%s"
-    param = (label)
+    sql = "DELETE FROM eth_registrar_controller_event_name_renewed WHERE network_id=%s AND label=%s"
+    param = (network_id, label)
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         if cur:
@@ -161,7 +197,7 @@ def is_exist_phrase(word):
 
     try:
 
-        # 检查连接是否断开，如果断开就进行重连
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
         conn.ping(reconnect=True)
 
         cur.execute(sql)

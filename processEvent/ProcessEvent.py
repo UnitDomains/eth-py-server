@@ -12,6 +12,9 @@ class ProcessEvent(ABC):
     """Application state that remembers what blocks we have scanned in the case of crash.
     """
 
+    def __int__(self,network_id):
+        self.network_id=network_id
+
     @abstractmethod
     def process_event(
             self,

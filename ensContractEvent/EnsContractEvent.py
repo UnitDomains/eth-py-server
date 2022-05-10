@@ -9,9 +9,10 @@ logger = logging.getLogger(__name__)
 
 
 class EnsContractEvent:
-    def __init__(self, web3: Web3):
+    def __init__(self, web3: Web3,network_id):
         self.logger = logger
         self.web3 = web3
+        self.network_id=network_id
 
     def get_contract(self):
         return
