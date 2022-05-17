@@ -20,14 +20,16 @@ class EventScannerState(ABC):
         """
 
     @abstractmethod
-    def start_chunk(self, block_number: int):
+    def start_chunk(self,
+                    block_number: int):
         """Scanner is about to ask data of multiple blocks over JSON-RPC.
 
         Start a database session if needed.
         """
 
     @abstractmethod
-    def end_chunk(self, block_number: int):
+    def end_chunk(self,
+                  block_number: int):
         """Scanner finished a number of blocks.
 
         Persistent any data in your state now.

@@ -9,10 +9,12 @@ logger = logging.getLogger(__name__)
 
 
 class EnsContractEvent:
-    def __init__(self, web3: Web3,network_id):
+    def __init__(self,
+                 web3: Web3,
+                 network_id):
         self.logger = logger
         self.web3 = web3
-        self.network_id=network_id
+        self.network_id = network_id
 
     def get_contract(self):
         return
@@ -23,8 +25,10 @@ class EnsContractEvent:
     def get_state(self):
         return
 
-    def loadFile(self, filename):
-        with open(filename, 'r') as f:
+    def loadFile(self,
+                 filename):
+        with open(filename,
+                  'r') as f:
             data = f.read()
             return data
 

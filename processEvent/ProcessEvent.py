@@ -12,9 +12,6 @@ class ProcessEvent(ABC):
     """Application state that remembers what blocks we have scanned in the case of crash.
     """
 
-    def __int__(self,network_id):
-        self.network_id=network_id
-
     @abstractmethod
     def process_event(
             self,
@@ -35,7 +32,8 @@ class ProcessEvent(ABC):
         """
 
     @abstractmethod
-    def delete_data(self, since_block: int) -> int:
+    def delete_data(self,
+                    since_block: int) -> int:
         """Delete any data since this block was scanned.
 
         Purges any potential minor reorg data.

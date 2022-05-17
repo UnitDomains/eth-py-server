@@ -6,15 +6,22 @@ from processEvent.ProcessEvent import ProcessEvent
 
 
 class ProcessEventImpl(ProcessEvent):
+
+    def __init__(self,
+                 network_id):
+        self.network_id = network_id
+
     """Store the state of scanned blocks and all events.
 
     All state is an in-memory dict.
     Simple load/store massive JSON on start up.
     """
 
-    def delete_data(self, since_block):
+    def delete_data(self,
+                    since_block):
         """Remove potentially reorganised blocks from the scan data."""
-        for block_num in range(since_block, self.get_last_scanned_block()):
+        for block_num in range(since_block,
+                               self.get_last_scanned_block()):
             if block_num in self.state["blocks"]:
                 del self.state["blocks"][block_num]
 
@@ -53,13 +60,14 @@ class ProcessEventImpl(ProcessEvent):
         txhash = event.transactionHash.hex()  # Transaction hash
         block_number = event.blockNumber
 
-        process_event_data = self.get_process_event_data(block_when, event)
+        process_event_data = self.get_process_event_data(block_when,
+                                                         event)
         self.save_data(
-            block_number,
-            txhash,
-            log_index,
-            process_event_data,
-            event)
+                block_number,
+                txhash,
+                log_index,
+                process_event_data,
+                event)
 
         '''
 

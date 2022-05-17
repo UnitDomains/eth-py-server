@@ -7,8 +7,8 @@ from processEvent.ReverseRegistrarProcessEvent import ReverseRegistrarProcessEve
 
 class ReverseRegistrarContractEvent(EnsContractEvent):
 
-    def __init__(self, web3):
-        self.web3 = web3
+    def __init__(self, web3, network_id):
+        EnsContractEvent.__init__(self, web3, network_id)
         ABI = self.loadFile('./abis/ReverseRegistrar.json')
         abi = json.loads(ABI)
         self.ERC20 = self.web3.eth.contract(abi=abi)

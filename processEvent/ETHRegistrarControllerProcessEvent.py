@@ -73,6 +73,9 @@ def process_event_helper(block_when: datetime.datetime, event: AttributeDict):
 
 
 class ETHRegistrarControllerProcessEvent(ProcessEventImpl):
+
+
+
     def get_process_event_data(self,
                                block_when: datetime.datetime,
                                event: AttributeDict) -> dict:
@@ -100,6 +103,9 @@ class ETHRegistrarControllerProcessEvent(ProcessEventImpl):
 
         if event.event == 'NameRegistered':
             insert_eth_registrar_controller_event_name_registered(
+                block_number,
+                tx_hash,
+                log_index,
                 self.network_id,
                 process_event_data['name'],
                 '0x' + process_event_data['label'].hex(),
@@ -111,6 +117,9 @@ class ETHRegistrarControllerProcessEvent(ProcessEventImpl):
         '''
         elif event.event == 'NameRenewed':
             insert_eth_registrar_controller_event_name_renewed(
+            block_number,
+                tx_hash,
+                log_index,
                                                                 self.network_id,
                                                                 process_event_data['name'],
                                                                '0x' + process_event_data['label'].hex(),
@@ -122,6 +131,9 @@ class ETHRegistrarControllerProcessEvent(ProcessEventImpl):
 
         elif event.event == 'OwnershipTransferred':
             insert_eth_registrar_controller_event_ownership_transferred(
+            block_number,
+                tx_hash,
+                log_index,
             self.network_id,
             process_event_data['previousOwner'],
                                                                  process_event_data['newOwner'],

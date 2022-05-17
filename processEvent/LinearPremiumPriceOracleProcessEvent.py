@@ -5,10 +5,11 @@ from web3.datastructures import AttributeDict
 from processEvent.ProcessEventImpl import ProcessEventImpl
 
 
-def OracleChanged(block_when: datetime.datetime, event: AttributeDict) -> dict:
+def OracleChanged(block_when: datetime.datetime,
+                  event: AttributeDict) -> dict:
     args = event["args"]
     event_data = {
-        "oracle": args["oracle"],
+        "oracle":    args["oracle"],
         "timestamp": block_when.isoformat(),
     }
     return event_data
@@ -20,8 +21,8 @@ def OwnershipTransferred(
     args = event["args"]
     event_data = {
         "previousOwner": args["previousOwner"],
-        "newOwner": args["newOwner"],
-        "timestamp": block_when.isoformat(),
+        "newOwner":      args["newOwner"],
+        "timestamp":     block_when.isoformat(),
     }
     return event_data
 
@@ -32,7 +33,7 @@ def PaymentTypeChanged(
     args = event["args"]
     event_data = {
         "_paymentType": args["_paymentType"],
-        "timestamp": block_when.isoformat(),
+        "timestamp":    block_when.isoformat(),
     }
     return event_data
 
@@ -42,7 +43,7 @@ def RegisterPriceChanged(
         event: AttributeDict) -> dict:
     args = event["args"]
     event_data = {
-        "prices": args["prices"],
+        "prices":    args["prices"],
         "timestamp": block_when.isoformat(),
     }
     return event_data
@@ -53,26 +54,28 @@ def RentPriceChanged(
         event: AttributeDict) -> dict:
     args = event["args"]
     event_data = {
-        "prices": args["prices"],
+        "prices":    args["prices"],
         "timestamp": block_when.isoformat(),
     }
     return event_data
 
 
 class LinearPremiumPriceOracleProcessEvent(ProcessEventImpl):
+
     def get_process_event_data(self,
                                block_when: datetime.datetime,
                                event: AttributeDict) -> dict:
         event_dict = {
-            'OracleChanged': OracleChanged,
+            'OracleChanged':        OracleChanged,
             'OwnershipTransferred': OwnershipTransferred,
-            'PaymentTypeChanged': PaymentTypeChanged,
+            'PaymentTypeChanged':   PaymentTypeChanged,
             'RegisterPriceChanged': RegisterPriceChanged,
-            'RentPriceChanged': RentPriceChanged
+            'RentPriceChanged':     RentPriceChanged
         }
         method = event_dict.get(event.event)
         if method:
-            return method(block_when, event)
+            return method(block_when,
+                          event)
 
     def save_data(
             self,

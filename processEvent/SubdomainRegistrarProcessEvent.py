@@ -35,6 +35,9 @@ def NewSubdomainRegistration(
 
 
 class SubdomainRegistrarProcessEvent(ProcessEventImpl):
+
+
+
     def get_process_event_data(self,
                                block_when: datetime.datetime,
                                event: AttributeDict) -> dict:
@@ -56,6 +59,9 @@ class SubdomainRegistrarProcessEvent(ProcessEventImpl):
         if event.event == 'DeleteSubdomain':
             #  event DeleteSubdomain(bytes32 indexed node, bytes32 indexed label);
             insert_subdomain_registrar_event_delete_subdomain(
+                block_number,
+                tx_hash,
+                log_index,
                 self.network_id,
                 '0x' + process_event_data['node'].hex(),
                 '0x' + process_event_data['label'].hex(),
@@ -64,6 +70,9 @@ class SubdomainRegistrarProcessEvent(ProcessEventImpl):
         elif event.event == 'NewSubdomainRegistration':
             '''
             event NewSubdomainRegistration(
+            block_number,
+                tx_hash,
+                log_index,
              self.network_id,
                 bytes32 indexed label,
                 string subdomain,
@@ -73,6 +82,9 @@ class SubdomainRegistrarProcessEvent(ProcessEventImpl):
             '''
 
             insert_subdomain_registrar_event_new_subdomain_registration(
+                block_number,
+                tx_hash,
+                log_index,
                 self.network_id,
                 '0x' + process_event_data['label'].hex(),
                 process_event_data['subdomain'],

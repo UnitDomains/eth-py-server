@@ -2,18 +2,19 @@ import datetime
 
 from web3.datastructures import AttributeDict
 
-from database.BaseRegistar import insert_base_registrar_event_transfer, insert_base_registrar_event_name_registered, \
-    update_base_registrar_event_name_renewed
+from database.BaseRegistar import insert_base_registrar_event_name_registered, insert_base_registrar_event_name_renewed, \
+    insert_base_registrar_event_transfer
 from database.utils import adjust_hex_2_fix_length
 from processEvent.ProcessEventImpl import ProcessEventImpl
 
 
-def Approval(block_when: datetime.datetime, event: AttributeDict) -> dict:
+def Approval(block_when: datetime.datetime,
+             event: AttributeDict) -> dict:
     args = event["args"]
     event_data = {
-        "owner": args["owner"],
-        "approved": args["approved"],
-        "tokenId": args["tokenId"],
+        "owner":     args["owner"],
+        "approved":  args["approved"],
+        "tokenId":   args["tokenId"],
         "timestamp": block_when.isoformat(),
     }
     return event_data
@@ -24,9 +25,9 @@ def ApprovalForAll(
         event: AttributeDict) -> dict:
     args = event["args"]
     event_data = {
-        "owner": args["owner"],
-        "operator": args["operator"],
-        "approved": args["approved"],
+        "owner":     args["owner"],
+        "operator":  args["operator"],
+        "approved":  args["approved"],
         "timestamp": block_when.isoformat(),
     }
     return event_data
@@ -38,7 +39,7 @@ def ControllerAdded(
     args = event["args"]
     event_data = {
         "controller": args["controller"],
-        "timestamp": block_when.isoformat(),
+        "timestamp":  block_when.isoformat(),
     }
     return event_data
 
@@ -49,17 +50,18 @@ def ControllerRemoved(
     args = event["args"]
     event_data = {
         "controller": args["controller"],
-        "timestamp": block_when.isoformat(),
+        "timestamp":  block_when.isoformat(),
     }
     return event_data
 
 
-def NameMigrated(block_when: datetime.datetime, event: AttributeDict) -> dict:
+def NameMigrated(block_when: datetime.datetime,
+                 event: AttributeDict) -> dict:
     args = event["args"]
     event_data = {
-        "id": args["id"],
-        "owner": args["owner"],
-        "expires": args["expires"],
+        "id":        args["id"],
+        "owner":     args["owner"],
+        "expires":   args["expires"],
         "timestamp": block_when.isoformat(),
     }
     return event_data
@@ -70,19 +72,20 @@ def NameRegistered(
         event: AttributeDict) -> dict:
     args = event["args"]
     event_data = {
-        "id": args["id"],
-        "owner": args["owner"],
-        "expires": args["expires"],
+        "id":        args["id"],
+        "owner":     args["owner"],
+        "expires":   args["expires"],
         "timestamp": block_when.isoformat(),
     }
     return event_data
 
 
-def NameRenewed(block_when: datetime.datetime, event: AttributeDict) -> dict:
+def NameRenewed(block_when: datetime.datetime,
+                event: AttributeDict) -> dict:
     args = event["args"]
     event_data = {
-        "id": args["id"],
-        "expires": args["expires"],
+        "id":        args["id"],
+        "expires":   args["expires"],
         "timestamp": block_when.isoformat(),
     }
     return event_data
@@ -94,41 +97,44 @@ def OwnershipTransferred(
     args = event["args"]
     event_data = {
         "previousOwner": args["previousOwner"],
-        "newOwner": args["newOwner"],
-        "timestamp": block_when.isoformat(),
+        "newOwner":      args["newOwner"],
+        "timestamp":     block_when.isoformat(),
     }
     return event_data
 
 
-def Transfer(block_when: datetime.datetime, event: AttributeDict) -> dict:
+def Transfer(block_when: datetime.datetime,
+             event: AttributeDict) -> dict:
     args = event["args"]
     event_data = {
-        "from": args["from"],
-        "to": args["to"],
-        "tokenId": args["tokenId"],
+        "from":      args["from"],
+        "to":        args["to"],
+        "tokenId":   args["tokenId"],
         "timestamp": block_when.isoformat(),
     }
     return event_data
 
 
 class BaseRegistarProcessEvent(ProcessEventImpl):
+
     def get_process_event_data(self,
                                block_when: datetime.datetime,
                                event: AttributeDict) -> dict:
         event_dict = {
-            'Approval': Approval,
-            'ApprovalForAll': ApprovalForAll,
-            'ControllerAdded': ControllerAdded,
-            'ControllerRemoved': ControllerRemoved,
-            'NameMigrated': NameMigrated,
-            'NameRegistered': NameRegistered,
-            'NameRenewed': NameRenewed,
+            'Approval':             Approval,
+            'ApprovalForAll':       ApprovalForAll,
+            'ControllerAdded':      ControllerAdded,
+            'ControllerRemoved':    ControllerRemoved,
+            'NameMigrated':         NameMigrated,
+            'NameRegistered':       NameRegistered,
+            'NameRenewed':          NameRenewed,
             'OwnershipTransferred': OwnershipTransferred,
-            'Transfer': Transfer
+            'Transfer':             Transfer
         }
         method = event_dict.get(event.event)
         if method:
-            return method(block_when, event)
+            return method(block_when,
+                          event)
 
     def save_data(
             self,
@@ -140,34 +146,47 @@ class BaseRegistarProcessEvent(ProcessEventImpl):
 
         if event.event == 'Transfer':
             insert_base_registrar_event_transfer(
-                self.network_id,
-                process_event_data['from'],
-                process_event_data['to'],
-                adjust_hex_2_fix_length(
-                    hex(
-                        process_event_data['tokenId'])),
-                process_event_data['timestamp'])
+                    block_number,
+                    tx_hash,
+                    log_index,
+                    self.network_id,
+                    process_event_data['from'],
+                    process_event_data['to'],
+                    adjust_hex_2_fix_length(
+                            hex(
+                                    process_event_data['tokenId'])),
+                    process_event_data['timestamp'])
 
         elif event.event == 'NameRenewed':
-            update_base_registrar_event_name_renewed(
-                self.network_id,
-                adjust_hex_2_fix_length(hex(
-                process_event_data['id'])), process_event_data['expires'], process_event_data['timestamp'])
+            insert_base_registrar_event_name_renewed(
+                    block_number,
+                    tx_hash,
+                    log_index,
+                    self.network_id,
+                    adjust_hex_2_fix_length(hex(
+                            process_event_data['id'])),
+                    process_event_data['expires'],
+                    process_event_data['timestamp'])
 
         elif event.event == 'NameRegistered':
             insert_base_registrar_event_name_registered(
-                self.network_id,
-                adjust_hex_2_fix_length(
-                    hex(
-                        process_event_data['id'])),
-                process_event_data['owner'],
-                process_event_data['expires'],
-                process_event_data['timestamp'])
+                    block_number,
+                    tx_hash,
+                    log_index,
+                    self.network_id,
+                    adjust_hex_2_fix_length(
+                            hex(
+                                    process_event_data['id'])),
+                    process_event_data['owner'],
+                    process_event_data['expires'],
+                    process_event_data['timestamp'])
 
         elif event.event == 'OwnershipTransferred':
-            print(process_event_data['newOwner'])
             '''
-            insert_base_registrar_event_name_registered(       
+            insert_base_registrar_event_name_registered(     
+                block_number,
+                tx_hash,
+                log_index,  
                 self.network_id,       
                 process_event_data['previousOwner'],
                 process_event_data['newOwner'],

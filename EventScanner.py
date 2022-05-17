@@ -7,7 +7,6 @@ from eth_abi.codec import ABICodec
 from web3 import Web3
 from web3._utils.events import get_event_data
 
-
 # Currently this method is not exposed over official web3 API,
 # but we need it to construct eth_getLogs parameters
 from web3._utils.filters import construct_event_filter_params
@@ -15,12 +14,14 @@ from web3.exceptions import BlockNotFound
 
 from eventState.EventScannerState import EventScannerState
 
-
 logger = logging.getLogger(__name__)
 
 
-def _retry_web3_call(func, start_block, end_block,
-                     retries, delay) -> Tuple[int, list]:
+def _retry_web3_call(func,
+                     start_block,
+                     end_block,
+                     retries,
+                     delay) -> Tuple[int, list]:
     """A custom retry loop to throttle down block range.
 
     If our JSON-RPC server cannot serve all incoming `eth_getLogs` in a single request,
@@ -37,7 +38,8 @@ def _retry_web3_call(func, start_block, end_block,
     """
     for i in range(retries):
         try:
-            return end_block, func(start_block, end_block)
+            return end_block, func(start_block,
+                                   end_block)
         except Exception as e:
             # Assume this is HTTPConnectionPool(host='localhost', port=8545): Read timed out. (read timeout=10)
             # from Go Ethereum. This translates to the error "context was cancelled" on the server side:
@@ -45,13 +47,13 @@ def _retry_web3_call(func, start_block, end_block,
             if i < retries - 1:
                 # Give some more verbose info than the default middleware
                 logger.warning(
-                    "Retrying events for block range %d - %d (%d) failed with %s, retrying in %s seconds",
-                    start_block,
-                    end_block,
-                    end_block -
-                    start_block,
-                    e,
-                    delay)
+                        "Retrying events for block range %d - %d (%d) failed with %s, retrying in %s seconds",
+                        start_block,
+                        end_block,
+                        end_block -
+                        start_block,
+                        e,
+                        delay)
                 # Decrease the `eth_getBlocks` range
                 end_block = start_block + ((end_block - start_block) // 2)
                 # Let the JSON-RPC to recover e.g. from restart
@@ -78,7 +80,7 @@ def _fetch_events_for_all_contracts(
 
     if from_block is None:
         raise TypeError(
-            "Missing mandatory keyword argument to getLogs: fromBlock")
+                "Missing mandatory keyword argument to getLogs: fromBlock")
 
     # Currently no way to poke this using a public Web3.py API.
     # This will return raw underlying ABI JSON object for the event
@@ -98,17 +100,17 @@ def _fetch_events_for_all_contracts(
     # More information here:
     # https://github.com/ethereum/web3.py/blob/e176ce0793dafdd0573acc8d4b76425b6eb604ca/web3/_utils/filters.py#L71
     data_filter_set, event_filter_params = construct_event_filter_params(
-        abi,
-        codec,
-        address=argument_filters.get("address"),
-        argument_filters=argument_filters,
-        fromBlock=from_block,
-        toBlock=to_block
+            abi,
+            codec,
+            address=argument_filters.get("address"),
+            argument_filters=argument_filters,
+            fromBlock=from_block,
+            toBlock=to_block
     )
 
     logger.debug(
-        "Querying eth_getLogs with the following parameters: %s",
-        event_filter_params)
+            "Querying eth_getLogs with the following parameters: %s",
+            event_filter_params)
 
     # Call JSON-RPC API on your Ethereum node.
     # get_logs() returns raw AttributedDict entries
@@ -120,7 +122,9 @@ def _fetch_events_for_all_contracts(
         # Convert raw JSON-RPC log result to human readable event by using ABI data
         # More information how processLog works here
         # https://github.com/ethereum/web3.py/blob/fbaf1ad11b0c7fac09ba34baff2c256cffe0a148/web3/_utils/events.py#L200
-        evt = get_event_data(codec, abi, log)
+        evt = get_event_data(codec,
+                             abi,
+                             log)
         # Note: This was originally yield,
         # but deferring the timeout exception caused the throttle logic not to
         # work
@@ -178,7 +182,8 @@ class EventScanner:
     def address(self):
         return self.token_address
 
-    def get_block_timestamp(self, block_num) -> datetime.datetime:
+    def get_block_timestamp(self,
+                            block_num) -> datetime.datetime:
         """Get Ethereum block timestamp"""
         try:
             block_info = self.web3.eth.getBlock(block_num)
@@ -201,7 +206,8 @@ class EventScanner:
 
         end_block = self.get_last_scanned_block()
         if end_block:
-            return max(1, end_block - self.NUM_BLOCKS_RESCAN_FOR_FORKS)
+            return max(1,
+                       end_block - self.NUM_BLOCKS_RESCAN_FOR_FORKS)
         return 1
 
     def get_suggested_scan_end_block(self):
@@ -214,7 +220,8 @@ class EventScanner:
     def get_last_scanned_block(self) -> int:
         return self.state.get_last_scanned_block()
 
-    def delete_potentially_forked_block_data(self, after_block: int):
+    def delete_potentially_forked_block_data(self,
+                                             after_block: int):
         """Purge old data in the case of blockchain reorganisation."""
         # self.state.delete_data(after_block)
 
@@ -245,22 +252,23 @@ class EventScanner:
             for event_type in ens_contract_event.get_events():
 
                 # Callable that takes care of the underlying web3 call
-                def _fetch_events(_start_block, _end_block):
+                def _fetch_events(_start_block,
+                                  _end_block):
                     return _fetch_events_for_all_contracts(
-                        self.web3,
-                        event_type,
-                        ens_contract_event.get_filters(),
-                        from_block=_start_block,
-                        to_block=_end_block)
+                            self.web3,
+                            event_type,
+                            ens_contract_event.get_filters(),
+                            from_block=_start_block,
+                            to_block=_end_block)
 
                 # Do `n` retries on `eth_getLogs`,
                 # throttle down block range if needed
                 end_block, events = _retry_web3_call(
-                    _fetch_events,
-                    start_block=start_block,
-                    end_block=end_block,
-                    retries=self.max_request_retries,
-                    delay=self.request_retry_seconds)
+                        _fetch_events,
+                        start_block=start_block,
+                        end_block=end_block,
+                        retries=self.max_request_retries,
+                        delay=self.request_retry_seconds)
 
                 for evt in events:
                     # Integer of the log index position in the block, null when
@@ -278,12 +286,15 @@ class EventScanner:
                     block_when = get_block_when(block_number)
 
                     logger.debug(
-                        "Processing event %s, block:%d count:%d",
-                        evt["event"],
-                        evt["blockNumber"])
+                            "Processing event %s, block:%d count:%d",
+                            evt["event"],
+                            evt["blockNumber"])
                     event_state = ens_contract_event.get_state()
                     processed = event_state.process_event(
-                        block_when, evt, ens_contract_event, event_type)
+                            block_when,
+                            evt,
+                            ens_contract_event,
+                            event_type)
                     all_processed.append(processed)
 
         end_block_timestamp = get_block_when(end_block)
@@ -318,11 +329,16 @@ class EventScanner:
         else:
             current_chuck_size *= self.chunk_size_increase
 
-        current_chuck_size = max(self.min_scan_chunk_size, current_chuck_size)
-        current_chuck_size = min(self.max_scan_chunk_size, current_chuck_size)
+        current_chuck_size = max(self.min_scan_chunk_size,
+                                 current_chuck_size)
+        current_chuck_size = min(self.max_scan_chunk_size,
+                                 current_chuck_size)
         return int(current_chuck_size)
 
-    def scan(self, start_block, end_block, start_chunk_size=20,
+    def scan(self,
+             start_block,
+             end_block,
+             start_chunk_size=20,
              progress_callback=Optional[Callable]) -> Tuple[list, int]:
         """Perform a token balances scan.
 
@@ -353,22 +369,24 @@ class EventScanner:
 
         while current_block <= end_block:
 
-            self.state.start_chunk(current_block, chunk_size)
+            self.state.start_chunk(current_block,
+                                   chunk_size)
 
             # Print some diagnostics to logs to try to fiddle with real world
             # JSON-RPC API performance
             estimated_end_block = current_block + chunk_size
             logger.debug(
-                "Scanning token transfers for blocks: %d - %d, chunk size %d, last chunk scan took %f, last logs found %d",
-                current_block,
-                estimated_end_block,
-                chunk_size,
-                last_scan_duration,
-                last_logs_found)
+                    "Scanning token transfers for blocks: %d - %d, chunk size %d, last chunk scan took %f, last logs found %d",
+                    current_block,
+                    estimated_end_block,
+                    chunk_size,
+                    last_scan_duration,
+                    last_logs_found)
 
             start = time.time()
             actual_end_block, end_block_timestamp, new_entries = self.scan_chunk(
-                current_block, estimated_end_block)
+                    current_block,
+                    estimated_end_block)
 
             if actual_end_block > end_block:
                 actual_end_block = end_block + 1
@@ -382,17 +400,18 @@ class EventScanner:
             # Print progress bar
             if progress_callback:
                 progress_callback(
-                    start_block,
-                    end_block,
-                    current_block,
-                    end_block_timestamp,
-                    chunk_size,
-                    len(new_entries))
+                        start_block,
+                        end_block,
+                        current_block,
+                        end_block_timestamp,
+                        chunk_size,
+                        len(new_entries))
 
             # Try to guess how many blocks to fetch over `eth_getLogs` API next
             # time
             chunk_size = self.estimate_next_chunk_size(
-                chunk_size, len(new_entries))
+                    chunk_size,
+                    len(new_entries))
 
             # Set where the next chunk starts
             current_block = current_end + 1

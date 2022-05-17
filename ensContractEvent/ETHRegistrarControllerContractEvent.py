@@ -6,14 +6,17 @@ from processEvent.ETHRegistrarControllerProcessEvent import ETHRegistrarControll
 
 
 class ETHRegistrarControllerContractEvent(EnsContractEvent):
-    def __init__(self, web3):
-        self.web3 = web3
+    def __init__(self,
+                 web3,
+                 network_id):
+        EnsContractEvent.__init__(self,
+                                  web3,
+                                  network_id)
         ABI = self.loadFile('./abis/ETHRegistrarController.json')
         abi = json.loads(ABI)
         self.ERC20 = self.web3.eth.contract(abi=abi)
 
     def get_contract(self):
-
         return self.ERC20
 
     def get_events(self):
