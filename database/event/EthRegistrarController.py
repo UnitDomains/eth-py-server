@@ -1,5 +1,5 @@
-from database.DomainInfo import insert_domain_info, update_domain_info_expires
 from database.database import conn, cur
+from database.info.DomainInfo import insert_domain_info, update_domain_info_expires
 from database.utils import get_uuid
 
 
@@ -134,7 +134,46 @@ def insert_eth_registrar_controller_event_name_renewed(block_number,
         VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
         """
     param = (
-    get_uuid(), block_number, tx_hash, log_index, network_id, name, label, cost, expires, baseNodeIndex, timestamp)
+        get_uuid(), block_number, tx_hash, log_index, network_id, name, label, cost, expires, baseNodeIndex, timestamp)
+
+    try:
+
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
+        conn.ping(reconnect=True)
+
+        if cur:
+            result = cur.execute(sql,
+                                 param)
+            conn.commit()
+
+            update_domain_info_expires(network_id,
+                                       label,
+                                       expires)
+
+    except Exception as e:
+        print(e)
+        conn.rollback()
+
+
+def insert_eth_registrar_controller_event_new_price_oracle(block_number,
+                                                           tx_hash,
+                                                           log_index,
+                                                           network_id,
+                                                           oracle,
+                                                           timestamp):
+    sql = """
+        INSERT INTO eth_registrar_controller_event_new_price_oracle(        
+        pk_id,
+        block_number,
+        tx_hash,
+        log_index,
+        network_id,
+       oracle
+        timestamp) 
+        VALUES (%s,%s,%s,%s,%s,%s,%s)
+        """
+    param = (
+        get_uuid(), block_number, tx_hash, log_index, network_id, oracle, timestamp)
 
     try:
 

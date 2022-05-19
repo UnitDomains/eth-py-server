@@ -2,7 +2,8 @@ import datetime
 
 from web3.datastructures import AttributeDict
 
-from database.EnsRegistry import insert_ens_registry_event_new_owner, insert_ens_registry_event_transfer
+from database.event.EnsRegistry import insert_ens_registry_event_new_owner, insert_ens_registry_event_new_resolver, \
+    insert_ens_registry_event_new_ttl, insert_ens_registry_event_transfer
 from processEvent.ProcessEventImpl import ProcessEventImpl
 
 
@@ -109,4 +110,33 @@ class EnsRegistryProcessEvent(ProcessEventImpl):
                     self.network_id,
                     '0x' + process_event_data['node'].hex(),
                     process_event_data['owner'],
+                    process_event_data['timestamp'])
+        elif event.event == 'ApprovalForAll':
+            insert_ens_registry_event_transfer(
+                    block_number,
+                    tx_hash,
+                    log_index,
+                    self.network_id,
+                    process_event_data['owner'],
+                    process_event_data['operator'],
+                    process_event_data['approved'],
+                    process_event_data['timestamp'])
+        elif event.event == 'NewResolver':
+            insert_ens_registry_event_new_resolver(
+                    block_number,
+                    tx_hash,
+                    log_index,
+                    self.network_id,
+                    '0x' + process_event_data['node'].hex(),
+                    process_event_data['resolver'],
+                    process_event_data['timestamp'])
+
+        elif event.event == 'NewTTL':
+            insert_ens_registry_event_new_ttl(
+                    block_number,
+                    tx_hash,
+                    log_index,
+                    self.network_id,
+                    '0x' + process_event_data['node'].hex(),
+                    process_event_data['ttl'],
                     process_event_data['timestamp'])

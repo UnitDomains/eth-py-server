@@ -1,5 +1,5 @@
-from database.SubdomainInfo import delete_subdomain_info, insert_subdomain_info
 from database.database import conn, cur
+from database.info.SubdomainInfo import delete_subdomain_info, insert_subdomain_info
 from database.utils import get_uuid
 
 

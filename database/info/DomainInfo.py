@@ -17,7 +17,7 @@ def insert_domain_info(network_id,
     delete_domain_info(network_id,
                        label)
 
-    reverse = 0
+
 
     sql = """
         INSERT INTO domain_info(
@@ -27,11 +27,11 @@ def insert_domain_info(network_id,
             name,
             base_node_index,
             owner,
-            expires,
-            reverse) 
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+            expires
+            ) 
+        VALUES (%s,%s,%s,%s,%s,%s,%s)
     """
-    param = (get_uuid(), network_id, label, name, base_node_index, owner, expires, reverse)
+    param = (get_uuid(), network_id, label, name, base_node_index, owner, expires)
 
     try:
 
@@ -98,6 +98,9 @@ def update_domain_info_transfer(network_id,
     except Exception as e:
         print(e)
         conn.rollback()
+
+
+
 
 
 def delete_domain_info(network_id,
