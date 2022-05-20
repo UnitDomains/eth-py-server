@@ -86,8 +86,8 @@ def insert_eth_registrar_controller_event_ownership_transferred(block_number,
             tx_hash,
             log_index,
             network_id,
-            previousOwner,
-            newOwner,
+            previous_owner,
+            new_owner,
             timestamp) 
         VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
     """
@@ -185,9 +185,7 @@ def insert_eth_registrar_controller_event_new_price_oracle(block_number,
                                  param)
             conn.commit()
 
-            update_domain_info_expires(network_id,
-                                       label,
-                                       expires)
+
 
     except Exception as e:
         print(e)

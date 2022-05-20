@@ -1,6 +1,5 @@
 import datetime
 import uuid
-from datetime import time
 
 
 def get_uuid():
@@ -28,3 +27,19 @@ def date_compare_now(date1):
     time_now = datetime.datetime.now()
     diff = time_now - date1
     return diff.days
+
+
+def convertBytes2String(b):
+    """
+    convert solidity bytes to python string.
+    :param b: 
+    :return: 
+    """
+
+    zbytes32 = b.hex().rstrip("0")
+   
+    if len(zbytes32) % 2 != 0:
+        zbytes32 = zbytes32 + '0'
+    # zbytes32 = bytes.fromhex(zbytes32).decode('utf8')
+
+    return zbytes32

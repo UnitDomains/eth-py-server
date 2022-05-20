@@ -92,7 +92,7 @@ def insert_ens_registry_event_approval_for_all(block_number,
         network_id,
         owner,
         operator,
-        approvedr,
+        approved,
         timestamp) 
     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
     """

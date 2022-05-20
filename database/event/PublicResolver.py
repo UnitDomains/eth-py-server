@@ -1,5 +1,5 @@
 from database.database import conn, cur
-from database.utils import get_uuid
+from database.utils import convertBytes2String, get_uuid
 
 
 def insert_public_resolver_event_addr_changed(block_number,
@@ -92,7 +92,6 @@ def insert_public_resolver_event_abi_changed(block_number,
                                              content_type,
                                              timestamp):
     """
-    event NameChanged(bytes32 indexed node, string name);
     :return:
     """
 
@@ -134,9 +133,10 @@ def insert_public_resolver_event_address_changed(block_number,
                                                  coin_type,
                                                  timestamp):
     """
-    event NameChanged(bytes32 indexed node, string name);
     :return:
     """
+   
+    new_address = convertBytes2String(new_address)
 
     sql = """
     INSERT INTO public_resolver_event_address_changed(
@@ -177,7 +177,6 @@ def insert_public_resolver_event_approval_for_all(block_number,
                                                   approved,
                                                   timestamp):
     """
-    event NameChanged(bytes32 indexed node, string name);
     :return:
     """
 
@@ -219,7 +218,6 @@ def insert_public_resolver_event_content_hash_changed(block_number,
                                                       hash,
                                                       timestamp):
     """
-    event NameChanged(bytes32 indexed node, string name);
     :return:
     """
 
@@ -262,7 +260,6 @@ def insert_public_resolver_event_DNS_record_changed(block_number,
                                                     record,
                                                     timestamp):
     """
-    event NameChanged(bytes32 indexed node, string name);
     :return:
     """
 
@@ -306,7 +303,6 @@ def insert_public_resolver_event_DNS_record_deleted(block_number,
                                                     resource,
                                                     timestamp):
     """
-    event NameChanged(bytes32 indexed node, string name);
     :return:
     """
 
@@ -347,7 +343,6 @@ def insert_public_resolver_event_DNS_zone_cleared(block_number,
                                                   node,
                                                   timestamp):
     """
-    event NameChanged(bytes32 indexed node, string name);
     :return:
     """
 
@@ -388,7 +383,6 @@ def insert_public_resolver_event_DNS_zone_hash_changed(block_number,
                                                        zone_hash,
                                                        timestamp):
     """
-    event NameChanged(bytes32 indexed node, string name);
     :return:
     """
 
@@ -431,9 +425,10 @@ def insert_public_resolver_event_interface_changed(block_number,
                                                    implementer,
                                                    timestamp):
     """
-    event NameChanged(bytes32 indexed node, string name);
     :return:
     """
+
+    interface_id = convertBytes2String(interface_id)
 
     sql = """
     INSERT INTO public_resolver_event_interface_changed(
@@ -474,7 +469,6 @@ def insert_public_resolver_event_text_changed(block_number,
                                               key,
                                               timestamp):
     """
-    event NameChanged(bytes32 indexed node, string name);
     :return:
     """
 
@@ -517,7 +511,6 @@ def insert_public_resolver_event_pubkey_changed(block_number,
                                                 y,
                                                 timestamp):
     """
-    event NameChanged(bytes32 indexed node, string name);
     :return:
     """
 

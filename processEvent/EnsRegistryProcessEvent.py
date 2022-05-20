@@ -2,7 +2,8 @@ import datetime
 
 from web3.datastructures import AttributeDict
 
-from database.event.EnsRegistry import insert_ens_registry_event_new_owner, insert_ens_registry_event_new_resolver, \
+from database.event.EnsRegistry import insert_ens_registry_event_approval_for_all, insert_ens_registry_event_new_owner, \
+    insert_ens_registry_event_new_resolver, \
     insert_ens_registry_event_new_ttl, insert_ens_registry_event_transfer
 from processEvent.ProcessEventImpl import ProcessEventImpl
 
@@ -112,7 +113,7 @@ class EnsRegistryProcessEvent(ProcessEventImpl):
                     process_event_data['owner'],
                     process_event_data['timestamp'])
         elif event.event == 'ApprovalForAll':
-            insert_ens_registry_event_transfer(
+            insert_ens_registry_event_approval_for_all(
                     block_number,
                     tx_hash,
                     log_index,

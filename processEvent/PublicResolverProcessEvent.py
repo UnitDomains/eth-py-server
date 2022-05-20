@@ -312,7 +312,7 @@ class PublicResolverProcessEvent(ProcessEventImpl):
                     log_index,
                     self.network_id,
                     '0x' + process_event_data['node'].hex(),
-                    process_event_data['interface_id'],
+                    process_event_data['interfaceID'],
                     process_event_data['implementer'],
                     process_event_data['timestamp'])
         elif event.event == 'TextChanged':
