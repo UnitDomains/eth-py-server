@@ -26,6 +26,7 @@ from database.database import close_database
 from ensContractEvent.BaseRegistarContractEvent import BaseRegistarContractEvent
 from ensContractEvent.ETHRegistrarControllerContractEvent import ETHRegistrarControllerContractEvent
 from ensContractEvent.EnsRegistryContractEvent import EnsRegistryContractEvent
+from ensContractEvent.LinearPremiumPriceOracleContractEvent import LinearPremiumPriceOracleContractEvent
 from ensContractEvent.PublicResolverContractEvent import PublicResolverContractEvent
 from ensContractEvent.ReverseRegistrarContractEvent import ReverseRegistrarContractEvent
 from ensContractEvent.SubdomainRegistrarContractEvent import SubdomainRegistrarContractEvent
@@ -114,7 +115,8 @@ if __name__ == "__main__":
                                                                network_id),
                                      ETHRegistrarControllerContractEvent(web3,
                                                                          network_id),
-                                     # LinearPremiumPriceOracleContractEvent(web3,network_id),
+                                     LinearPremiumPriceOracleContractEvent(web3,
+                                                                           network_id),
                                      PublicResolverContractEvent(web3,
                                                                  network_id),
                                      ReverseRegistrarContractEvent(web3,
@@ -192,7 +194,7 @@ if __name__ == "__main__":
         # 添加任务,时间间隔60S
         scheduler.add_job(run,
                           'interval',
-                          seconds=60,
+                          seconds=120,
                           id='scan',
                           args=[api_url_rinkeby_alchemy])
         scheduler.start()

@@ -47,13 +47,13 @@ def insert_subdomain_info(network_id,
 
 
 def delete_subdomain_info(network_id,
-                          node,
-                          label):
+                          label,
+                          sub_node_label):
     sql = """
         DELETE FROM subdomain_info 
-        WHERE network_id=%s AND node=%s AND label=%s
+        WHERE network_id=%s AND label=%s AND sub_node_label=%s
         """
-    param = (network_id, node, label)
+    param = (network_id, label, sub_node_label)
 
     try:
 

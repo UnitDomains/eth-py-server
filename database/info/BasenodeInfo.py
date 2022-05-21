@@ -1,21 +1,24 @@
+import pymysql
+
 from database.database import conn, cur
 from database.utils import get_uuid
 
 
 def insert_basenode_info_basenode(network_id,
-                                  node,
+                                  basenode,
                                   name):
-    reverse = 0
+    basenode_index = get_basenode_count(network_id)
 
     sql = """
         INSERT INTO basenode_info(
             pk_id,
             network_id,
-            node,
+            basenode,
+            basenode_index,
             name) 
-        VALUES (%s,%s,%s,%s)
+        VALUES (%s,%s,%s,%s,%s)
     """
-    param = (get_uuid(), network_id, node, name)
+    param = (get_uuid(), network_id, basenode, basenode_index, name)
 
     try:
 
@@ -30,3 +33,33 @@ def insert_basenode_info_basenode(network_id,
     except Exception as e:
         print(e)
         conn.rollback()
+
+
+def get_basenode_count(network_id):
+    """
+    """
+
+    sql = """
+        SELECT count(*) 
+        FROM basenode_info 
+        WHERE network_id=%s
+    """
+    param = (network_id)
+
+    try:
+
+        # Check whether the connection is disconnected. If it is disconnected, reconnect the database
+        conn.ping(reconnect=True)
+
+        cur.execute(sql,
+                    param)
+
+        if cur.rowcount > 0:
+            row = cur.fetchone()
+
+            return row[0]
+
+        return 0
+
+    except pymysql.ProgrammingError as e:
+        return 0

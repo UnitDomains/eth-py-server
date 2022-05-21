@@ -322,7 +322,7 @@ class PublicResolverProcessEvent(ProcessEventImpl):
                     log_index,
                     self.network_id,
                     '0x' + process_event_data['node'].hex(),
-                    process_event_data['indexed_key'],
+                    process_event_data['indexedKey'],
                     process_event_data['key'],
                     process_event_data['timestamp'])
         elif event.event == 'PubkeyChanged':

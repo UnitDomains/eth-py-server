@@ -365,6 +365,7 @@ def insert_base_registrar_event_new_basenode(block_number,
 
 
 
+
     except Exception as e:
         print(e)
         conn.rollback()

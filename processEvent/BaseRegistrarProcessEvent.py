@@ -136,6 +136,7 @@ class BaseRegistarProcessEvent(ProcessEventImpl):
     def get_process_event_data(self,
                                block_when: datetime.datetime,
                                event: AttributeDict) -> dict:
+
         event_dict = {
             'Approval':             Approval,
             'ApprovalForAll':       ApprovalForAll,
@@ -208,13 +209,12 @@ class BaseRegistarProcessEvent(ProcessEventImpl):
                     process_event_data['newOwner'],
                     process_event_data['timestamp'])
         elif event.event == 'NewBaseNode':
-
             insert_base_registrar_event_new_basenode(
                     block_number,
                     tx_hash,
                     log_index,
                     self.network_id,
-                    process_event_data['baseNode'],
+                    '0x' + process_event_data['baseNode'].hex(),
                     process_event_data['timestamp'])
         elif event.event == 'Approval':
             insert_base_registrar_event_approval(
@@ -224,7 +224,9 @@ class BaseRegistarProcessEvent(ProcessEventImpl):
                     self.network_id,
                     process_event_data['owner'],
                     process_event_data['approved'],
-                    process_event_data['tokenId'],
+                    adjust_hex_2_fix_length(
+                            hex(
+                                    process_event_data['tokenId'])),
                     process_event_data['timestamp'])
         elif event.event == 'ApprovalForAll':
             insert_base_registrar_event_approval_for_all(

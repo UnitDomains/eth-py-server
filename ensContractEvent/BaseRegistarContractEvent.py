@@ -29,6 +29,7 @@ class BaseRegistarContractEvent(EnsContractEvent):
             self.ERC20.events.NameMigrated,
             self.ERC20.events.NameRegistered,
             self.ERC20.events.NameRenewed,
+            self.ERC20.events.NewBaseNode,
             self.ERC20.events.OwnershipTransferred,
             self.ERC20.events.Transfer
         ]

@@ -145,7 +145,7 @@ def insert_price_oracle_event_register_price_changed(block_number,
             timestamp) 
         VALUES (%s,%s,%s,%s,%s,%s,%s)
         """
-    param = (get_uuid(), block_number, tx_hash, log_index, network_id, prices, new_owner, timestamp)
+    param = (get_uuid(), block_number, tx_hash, log_index, network_id, str(prices), timestamp)
 
     try:
 
@@ -158,7 +158,7 @@ def insert_price_oracle_event_register_price_changed(block_number,
             conn.commit()
 
             update_price_info_register_price(network_id,
-                                             prices)
+                                             str(prices))
 
 
 
@@ -185,7 +185,7 @@ def insert_price_oracle_event_rent_price_changed(block_number,
             timestamp) 
         VALUES (%s,%s,%s,%s,%s,%s,%s)
         """
-    param = (get_uuid(), block_number, tx_hash, log_index, network_id, prices, timestamp)
+    param = (get_uuid(), block_number, tx_hash, log_index, network_id, str(prices), timestamp)
 
     try:
 
@@ -198,7 +198,7 @@ def insert_price_oracle_event_rent_price_changed(block_number,
             conn.commit()
 
             update_price_info_rent_price(network_id,
-                                         prices)
+                                         str(prices))
 
 
 

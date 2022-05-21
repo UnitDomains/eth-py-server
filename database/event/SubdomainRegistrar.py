@@ -49,7 +49,6 @@ def insert_subdomain_registrar_event_new_subdomain_registration(block_number,
                                  param)
             conn.commit()
 
-            print("insert_subdomain_info")
             insert_subdomain_info(network_id,
                                   label,
                                   sub_node_label,
