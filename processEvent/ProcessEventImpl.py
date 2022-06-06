@@ -62,6 +62,9 @@ class ProcessEventImpl(ProcessEvent):
 
         process_event_data = self.get_process_event_data(block_when,
                                                          event)
+
+        print("%d\t%d\t%-20s-->%s" % (block_number, log_index, event.event, self.__repr__()))
+
         self.save_data(
                 block_number,
                 txhash,

@@ -2,9 +2,12 @@ import datetime
 
 from web3.datastructures import AttributeDict
 
-from database.event.EnsRegistry import insert_ens_registry_event_approval_for_all, insert_ens_registry_event_new_owner, \
-    insert_ens_registry_event_new_resolver, \
-    insert_ens_registry_event_new_ttl, insert_ens_registry_event_transfer
+from database.event.EnsRegistry.ApprovalForAll import insert_ens_registry_event_approval_for_all
+from database.event.EnsRegistry.NewOwner import insert_ens_registry_event_new_owner
+from database.event.EnsRegistry.NewResolver import insert_ens_registry_event_new_resolver
+from database.event.EnsRegistry.NewTLDOwner import insert_ens_registry_event_new_tld_owner
+from database.event.EnsRegistry.NewTTL import insert_ens_registry_event_new_ttl
+from database.event.EnsRegistry.Transfer import insert_ens_registry_event_transfer
 from processEvent.ProcessEventImpl import ProcessEventImpl
 
 
@@ -27,6 +30,18 @@ def NewOwner(block_when: datetime.datetime,
     event_data = {
         "node":      args["node"],
         "label":     args["label"],
+        "owner":     args["owner"],
+        "timestamp": block_when.isoformat(),
+    }
+    return event_data
+
+
+def NewTLDOwner(block_when: datetime.datetime,
+                event: AttributeDict) -> dict:
+    args = event["args"]
+    event_data = {
+        "node":      args["node"],
+        "nodelabel": args["nodelabel"],
         "owner":     args["owner"],
         "timestamp": block_when.isoformat(),
     }
@@ -68,12 +83,16 @@ def Transfer(block_when: datetime.datetime,
 
 class EnsRegistryProcessEvent(ProcessEventImpl):
 
+    def __repr__(self):
+        return "EnsRegistryProcessEvent"
+
     def get_process_event_data(self,
                                block_when: datetime.datetime,
                                event: AttributeDict) -> dict:
         event_dict = {
             'ApprovalForAll': ApprovalForAll,
             'NewOwner':       NewOwner,
+            "NewTLDOwner":    NewTLDOwner,
             'NewResolver':    NewResolver,
             'NewTTL':         NewTTL,
             'Transfer':       Transfer
@@ -103,6 +122,17 @@ class EnsRegistryProcessEvent(ProcessEventImpl):
                     '0x' + process_event_data['label'].hex(),
                     process_event_data['owner'],
                     process_event_data['timestamp'])
+        if event.event == 'NewTLDOwner':
+            insert_ens_registry_event_new_tld_owner(
+                    block_number,
+                    tx_hash,
+                    log_index,
+                    self.network_id,
+                    '0x' + process_event_data['node'].hex(),
+                    '0x' + process_event_data['nodelabel'].hex(),
+                    process_event_data['owner'],
+                    process_event_data['timestamp'])
+
         elif event.event == 'Transfer':
             insert_ens_registry_event_transfer(
                     block_number,

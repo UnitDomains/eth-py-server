@@ -2,10 +2,12 @@ import configparser
 
 
 class AddressConfigure:
-    def __init__(self, network_id):
+    def __init__(self,
+                 network_id):
         self.fname = "addressConfig.ini"
         con = configparser.ConfigParser()
-        con.read(self.fname, encoding='utf-8')
+        con.read(self.fname,
+                 encoding='utf-8')
         if network_id == 1:
             items = con.items('address_mainnet')
         elif network_id == 3:
@@ -41,3 +43,7 @@ class AddressConfigure:
     def get_subdomain_registrar_contract_address(self):
         """The number of the last block we have stored."""
         return self.items["subdomain_registrar"]
+
+    def get_start_block(self):
+        """The number of the last block we have stored."""
+        return int(self.items["start_block"])

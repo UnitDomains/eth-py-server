@@ -1,5 +1,3 @@
-import pymysql
-
 from database.database import conn, cur
 from database.utils import get_uuid
 
@@ -33,6 +31,7 @@ def insert_price_info_default(network_id):
 
 
     except Exception as e:
+        print("insert_price_info_default")
         print(e)
         conn.rollback()
 
@@ -61,6 +60,7 @@ def update_price_info_register_price(network_id,
             conn.commit()
 
     except Exception as e:
+        print("update_price_info_register_price")
         print(e)
         conn.rollback()
 
@@ -89,6 +89,7 @@ def update_price_info_rent_price(network_id,
             conn.commit()
 
     except Exception as e:
+        print("update_price_info_rent_price")
         print(e)
         conn.rollback()
 
@@ -117,6 +118,7 @@ def update_price_info_payment_type(network_id,
             conn.commit()
 
     except Exception as e:
+        print("update_price_info_payment_type")
         print(e)
         conn.rollback()
 
@@ -144,5 +146,10 @@ def is_exist_price(network_id):
 
         return False
 
-    except pymysql.ProgrammingError as e:
+
+    except Exception as e:
+
+        print("is_exist_price")
+
+        print(e)
         return False

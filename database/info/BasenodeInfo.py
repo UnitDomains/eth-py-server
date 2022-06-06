@@ -1,5 +1,3 @@
-import pymysql
-
 from database.database import conn, cur
 from database.utils import get_uuid
 
@@ -31,6 +29,7 @@ def insert_basenode_info_basenode(network_id,
             conn.commit()
 
     except Exception as e:
+        print("insert_basenode_info_basenode")
         print(e)
         conn.rollback()
 
@@ -61,5 +60,8 @@ def get_basenode_count(network_id):
 
         return 0
 
-    except pymysql.ProgrammingError as e:
+
+    except Exception as e:
+        print("get_basenode_count")
+        print(e)
         return 0

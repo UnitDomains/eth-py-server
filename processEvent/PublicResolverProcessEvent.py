@@ -2,17 +2,19 @@ import datetime
 
 from web3.datastructures import AttributeDict
 
-from database.event.PublicResolver import insert_public_resolver_event_DNS_record_changed, \
-    insert_public_resolver_event_DNS_record_deleted, \
-    insert_public_resolver_event_DNS_zone_cleared, \
-    insert_public_resolver_event_DNS_zone_hash_changed, \
-    insert_public_resolver_event_abi_changed, insert_public_resolver_event_addr_changed, \
-    insert_public_resolver_event_address_changed, insert_public_resolver_event_approval_for_all, \
-    insert_public_resolver_event_content_hash_changed, \
-    insert_public_resolver_event_interface_changed, \
-    insert_public_resolver_event_name_changed, \
-    insert_public_resolver_event_pubkey_changed, \
-    insert_public_resolver_event_text_changed
+from database.event.PublicResolver.ABIChanged import insert_public_resolver_event_abi_changed
+from database.event.PublicResolver.AddrChanged import insert_public_resolver_event_addr_changed
+from database.event.PublicResolver.AddressChanged import insert_public_resolver_event_address_changed
+from database.event.PublicResolver.ApprovalForAll import insert_public_resolver_event_approval_for_all
+from database.event.PublicResolver.ContenthashChanged import insert_public_resolver_event_content_hash_changed
+from database.event.PublicResolver.DNSRecordChanged import insert_public_resolver_event_DNS_record_changed
+from database.event.PublicResolver.DNSRecordDeleted import insert_public_resolver_event_DNS_record_deleted
+from database.event.PublicResolver.DNSZoneCleared import insert_public_resolver_event_DNS_zone_cleared
+from database.event.PublicResolver.DNSZonehashChanged import insert_public_resolver_event_DNS_zone_hash_changed
+from database.event.PublicResolver.InterfaceChanged import insert_public_resolver_event_interface_changed
+from database.event.PublicResolver.NameChanged import insert_public_resolver_event_name_changed
+from database.event.PublicResolver.PubkeyChanged import insert_public_resolver_event_pubkey_changed
+from database.event.PublicResolver.TextChanged import insert_public_resolver_event_text_changed
 from processEvent.ProcessEventImpl import ProcessEventImpl
 
 
@@ -170,12 +172,16 @@ def TextChanged(block_when: datetime.datetime,
         "node":       args["node"],
         "indexedKey": args["indexedKey"],
         "key":        args["key"],
+        "value":      args["value"],
         "timestamp":  block_when.isoformat(),
     }
     return event_data
 
 
 class PublicResolverProcessEvent(ProcessEventImpl):
+
+    def __repr__(self):
+        return "PublicResolverProcessEvent"
 
     def get_process_event_data(self,
                                block_when: datetime.datetime,
@@ -207,6 +213,7 @@ class PublicResolverProcessEvent(ProcessEventImpl):
             log_index,
             process_event_data: dict,
             event: AttributeDict) -> int:
+
         if event.event == 'AddrChanged':
             # event AddrChanged(bytes32 indexed node, address a);
             insert_public_resolver_event_addr_changed(
@@ -324,6 +331,7 @@ class PublicResolverProcessEvent(ProcessEventImpl):
                     '0x' + process_event_data['node'].hex(),
                     process_event_data['indexedKey'],
                     process_event_data['key'],
+                    process_event_data['value'],
                     process_event_data['timestamp'])
         elif event.event == 'PubkeyChanged':
             insert_public_resolver_event_pubkey_changed(

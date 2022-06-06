@@ -2,7 +2,8 @@ import datetime
 
 from web3.datastructures import AttributeDict
 
-from database.event.SubdomainRegistrar import insert_subdomain_registrar_event_delete_subdomain, \
+from database.event.SubdomainRegistrar.DeleteSubdomain import insert_subdomain_registrar_event_delete_subdomain
+from database.event.SubdomainRegistrar.NewSubdomainRegistration import \
     insert_subdomain_registrar_event_new_subdomain_registration
 from processEvent.ProcessEventImpl import ProcessEventImpl
 
@@ -24,16 +25,18 @@ def NewSubdomainRegistration(
         event: AttributeDict) -> dict:
     args = event["args"]
     event_data = {
-        "label":          args["label"],
-        "subdomain":      args["subdomain"],
-        "subdomainLabel": args["subdomainLabel"],
-        "owner":          args["owner"],
-        "timestamp":      block_when.isoformat(),
+        "label":     args["label"],
+        "subdomain": args["subdomain"],
+        "owner":     args["owner"],
+        "timestamp": block_when.isoformat(),
     }
     return event_data
 
 
 class SubdomainRegistrarProcessEvent(ProcessEventImpl):
+
+    def __repr__(self):
+        return "SubdomainRegistrarProcessEvent"
 
     def get_process_event_data(self,
                                block_when: datetime.datetime,
@@ -54,6 +57,7 @@ class SubdomainRegistrarProcessEvent(ProcessEventImpl):
             log_index,
             process_event_data: dict,
             event: AttributeDict) -> int:
+
         if event.event == 'DeleteSubdomain':
             #  event DeleteSubdomain(bytes32 indexed node, bytes32 indexed label);
             insert_subdomain_registrar_event_delete_subdomain(
@@ -68,15 +72,10 @@ class SubdomainRegistrarProcessEvent(ProcessEventImpl):
         elif event.event == 'NewSubdomainRegistration':
             '''
             event NewSubdomainRegistration(
-            block_number,
-                tx_hash,
-                log_index,
-             self.network_id,
                 bytes32 indexed label,
                 string subdomain,
-                bytes32 indexed subdomainLabel,
                 address indexed owner
-             );
+            );
             '''
 
             insert_subdomain_registrar_event_new_subdomain_registration(
@@ -86,6 +85,5 @@ class SubdomainRegistrarProcessEvent(ProcessEventImpl):
                     self.network_id,
                     '0x' + process_event_data['label'].hex(),
                     process_event_data['subdomain'],
-                    '0x' + process_event_data['subdomainLabel'].hex(),
                     process_event_data['owner'],
                     process_event_data['timestamp'])

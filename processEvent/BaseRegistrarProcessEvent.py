@@ -2,14 +2,16 @@ import datetime
 
 from web3.datastructures import AttributeDict
 
-from database.event.BaseRegistar import insert_base_registrar_event_approval, \
-    insert_base_registrar_event_approval_for_all, \
-    insert_base_registrar_event_controller_added, \
-    insert_base_registrar_event_controller_removed, insert_base_registrar_event_name_migrated, \
-    insert_base_registrar_event_name_registered, \
-    insert_base_registrar_event_name_renewed, \
-    insert_base_registrar_event_new_basenode, insert_base_registrar_event_ownership_transferred, \
-    insert_base_registrar_event_transfer
+from database.event.BaseRegistar.Approval import insert_base_registrar_event_approval
+from database.event.BaseRegistar.ApprovalForAll import insert_base_registrar_event_approval_for_all
+from database.event.BaseRegistar.ControllerAdded import insert_base_registrar_event_controller_added
+from database.event.BaseRegistar.ControllerRemoved import insert_base_registrar_event_controller_removed
+from database.event.BaseRegistar.NameMigrated import insert_base_registrar_event_name_migrated
+from database.event.BaseRegistar.NameRegistered import insert_base_registrar_event_name_registered
+from database.event.BaseRegistar.NameRenewed import insert_base_registrar_event_name_renewed
+from database.event.BaseRegistar.NewBaseNode import insert_base_registrar_event_new_basenode
+from database.event.BaseRegistar.OwnershipTransferred import insert_base_registrar_event_ownership_transferred
+from database.event.BaseRegistar.Transfer import insert_base_registrar_event_transfer
 from database.utils import adjust_hex_2_fix_length
 from processEvent.ProcessEventImpl import ProcessEventImpl
 
@@ -133,6 +135,9 @@ def Transfer(block_when: datetime.datetime,
 
 class BaseRegistarProcessEvent(ProcessEventImpl):
 
+    def __repr__(self):
+        return "BaseRegistarProcessEvent"
+
     def get_process_event_data(self,
                                block_when: datetime.datetime,
                                event: AttributeDict) -> dict:
@@ -255,7 +260,6 @@ class BaseRegistarProcessEvent(ProcessEventImpl):
                     process_event_data['controller'],
                     process_event_data['timestamp'])
         elif event.event == 'NameMigrated':
-
             insert_base_registrar_event_name_migrated(
                     block_number,
                     tx_hash,

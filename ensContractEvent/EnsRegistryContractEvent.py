@@ -22,6 +22,7 @@ class EnsRegistryContractEvent(EnsContractEvent):
     def get_events(self):
         return [self.ERC20.events.ApprovalForAll,
                 self.ERC20.events.NewOwner,
+                self.ERC20.events.NewTLDOwner,
                 self.ERC20.events.NewResolver,
                 self.ERC20.events.NewTTL,
                 self.ERC20.events.Transfer

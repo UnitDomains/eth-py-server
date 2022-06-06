@@ -2,9 +2,11 @@ import datetime
 
 from web3.datastructures import AttributeDict
 
-from database.event.PriceOracle import insert_price_oracle_event_oracle_changed, \
-    insert_price_oracle_event_ownership_transferred, insert_price_oracle_event_payment_type_changed, \
-    insert_price_oracle_event_register_price_changed, insert_price_oracle_event_rent_price_changed
+from database.event.PriceOracle.OracleChanged import insert_price_oracle_event_oracle_changed
+from database.event.PriceOracle.OwnershipTransferred import insert_price_oracle_event_ownership_transferred
+from database.event.PriceOracle.PaymentTypeChanged import insert_price_oracle_event_payment_type_changed
+from database.event.PriceOracle.RegisterPriceChanged import insert_price_oracle_event_register_price_changed
+from database.event.PriceOracle.RentPriceChanged import insert_price_oracle_event_rent_price_changed
 from processEvent.ProcessEventImpl import ProcessEventImpl
 
 
@@ -65,6 +67,9 @@ def RentPriceChanged(
 
 class LinearPremiumPriceOracleProcessEvent(ProcessEventImpl):
 
+    def __repr__(self):
+        return "LinearPremiumPriceOracleProcessEvent"
+
     def get_process_event_data(self,
                                block_when: datetime.datetime,
                                event: AttributeDict) -> dict:
@@ -87,6 +92,7 @@ class LinearPremiumPriceOracleProcessEvent(ProcessEventImpl):
             log_index,
             process_event_data: dict,
             event: AttributeDict) -> int:
+
         if event.event == 'OracleChanged':
             # event OracleChanged(address oracle);
             insert_price_oracle_event_oracle_changed(

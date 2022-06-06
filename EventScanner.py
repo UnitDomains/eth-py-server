@@ -1,17 +1,17 @@
 import datetime
 import logging
 import time
-from typing import Tuple, Optional, Callable, List, Iterable
+from typing import Callable, Iterable, List, Optional, Tuple
 
 from eth_abi.codec import ABICodec
 from web3 import Web3
 from web3._utils.events import get_event_data
-
 # Currently this method is not exposed over official web3 API,
 # but we need it to construct eth_getLogs parameters
 from web3._utils.filters import construct_event_filter_params
 from web3.exceptions import BlockNotFound
 
+from database.event.PurgeOldData import PurgeOldData
 from eventState.EventScannerState import EventScannerState
 
 logger = logging.getLogger(__name__)
@@ -146,6 +146,7 @@ class EventScanner:
     def __init__(
             self,
             web3: Web3,
+            network_id: 0,
             state: EventScannerState,
             ens_contract_events: List,
             max_chunk_scan_size: int = 10000,
@@ -162,6 +163,7 @@ class EventScanner:
 
         self.logger = logger
         self.web3 = web3
+        self.network_id = network_id
         self.state = state
         self.ens_contract_events = ens_contract_events
 
@@ -224,6 +226,8 @@ class EventScanner:
                                              after_block: int):
         """Purge old data in the case of blockchain reorganisation."""
         # self.state.delete_data(after_block)
+        PurgeOldData(self.network_id,
+                     after_block)
 
     def scan_chunk(self,
                    start_block,
@@ -231,7 +235,7 @@ class EventScanner:
                                        datetime.datetime,
                                        list]:
         """Read and process events between to block numbers.
-        读取并处理起止区块之间的事件
+
         Dynamically decrease the size of the chunk if the case JSON-RPC server pukes out.
 
         :return: tuple(actual end block number, when this block was mined, processed events)
@@ -247,10 +251,10 @@ class EventScanner:
                 block_timestamps[block_num] = get_block_timestamp(block_num)
             return block_timestamps[block_num]
 
+        all_events = []
         all_processed = []
         for ens_contract_event in self.ens_contract_events:
             for event_type in ens_contract_event.get_events():
-
                 # Callable that takes care of the underlying web3 call
                 def _fetch_events(_start_block,
                                   _end_block):
@@ -271,31 +275,41 @@ class EventScanner:
                         delay=self.request_retry_seconds)
 
                 for evt in events:
-                    # Integer of the log index position in the block, null when
-                    # its pending
-                    idx = evt["logIndex"]
+                    all_events.append((ens_contract_event, event_type, evt))
 
-                    # We cannot avoid minor chain reorganisations, but
-                    # at least we must avoid blocks that are not mined yet
-                    assert idx is not None, "Somehow tried to scan a pending block"
+        all_events.sort(
+                key=lambda x: (x[2]['blockNumber'], x[2]['logIndex']))
 
-                    block_number = evt["blockNumber"]
+        for event in all_events:
+            ens_contract_event = event[0]
+            event_type = event[1]
+            evt = event[2]
 
-                    # Get UTC time when this event happened (block mined timestamp)
-                    # from our in-memory cache
-                    block_when = get_block_when(block_number)
+            # Integer of the log index position in the block, null when
+            # its pending
+            idx = evt["logIndex"]
 
-                    logger.debug(
-                            "Processing event %s, block:%d count:%d",
-                            evt["event"],
-                            evt["blockNumber"])
-                    event_state = ens_contract_event.get_state()
-                    processed = event_state.process_event(
-                            block_when,
-                            evt,
-                            ens_contract_event,
-                            event_type)
-                    all_processed.append(processed)
+            # We cannot avoid minor chain reorganisations, but
+            # at least we must avoid blocks that are not mined yet
+            assert idx is not None, "Somehow tried to scan a pending block"
+
+            block_number = evt["blockNumber"]
+
+            # Get UTC time when this event happened (block mined timestamp)
+            # from our in-memory cache
+            block_when = get_block_when(block_number)
+
+            logger.debug(
+                    "Processing event %s, block:%d count:%d",
+                    evt["event"],
+                    evt["blockNumber"])
+            event_state = ens_contract_event.get_state()
+            processed = event_state.process_event(
+                    block_when,
+                    evt,
+                    ens_contract_event,
+                    event_type)
+            all_processed.append(processed)
 
         end_block_timestamp = get_block_when(end_block)
         return end_block, end_block_timestamp, all_processed

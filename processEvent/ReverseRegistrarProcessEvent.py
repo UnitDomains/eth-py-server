@@ -2,8 +2,9 @@ import datetime
 
 from web3.datastructures import AttributeDict
 
-from database.event.ReverseRegistrar import insert_reverse_registrar_event_controller_changed, \
-    insert_reverse_registrar_event_ownership_transferred, insert_reverse_registrar_event_reverse_claimed
+from database.event.ReverseRegistrar.ControllerChanged import insert_reverse_registrar_event_controller_changed
+from database.event.ReverseRegistrar.OwnershipTransferred import insert_reverse_registrar_event_ownership_transferred
+from database.event.ReverseRegistrar.ReverseClaimed import insert_reverse_registrar_event_reverse_claimed
 from processEvent.ProcessEventImpl import ProcessEventImpl
 
 
@@ -45,6 +46,9 @@ def ReverseClaimed(
 
 class ReverseRegistrarProcessEvent(ProcessEventImpl):
 
+    def __repr__(self):
+        return "ReverseRegistrarProcessEvent"
+
     def get_process_event_data(self,
                                block_when: datetime.datetime,
                                event: AttributeDict) -> dict:
@@ -65,6 +69,7 @@ class ReverseRegistrarProcessEvent(ProcessEventImpl):
             log_index,
             process_event_data: dict,
             event: AttributeDict) -> int:
+
         if event.event == 'ControllerChanged':
             insert_reverse_registrar_event_controller_changed(
                     block_number,
@@ -90,6 +95,6 @@ class ReverseRegistrarProcessEvent(ProcessEventImpl):
                     tx_hash,
                     log_index,
                     self.network_id,
-                    '0x' + process_event_data['node'].hex(),
                     process_event_data['addr'],
+                    '0x' + process_event_data['node'].hex(),
                     process_event_data['timestamp'])

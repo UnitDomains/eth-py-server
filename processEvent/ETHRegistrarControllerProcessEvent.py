@@ -2,8 +2,10 @@ import datetime
 
 from web3.datastructures import AttributeDict
 
-from database.event.EthRegistrarController import insert_eth_registrar_controller_event_name_registered, \
-    insert_eth_registrar_controller_event_name_renewed, insert_eth_registrar_controller_event_new_price_oracle, \
+from database.event.EthRegistrarController.NameRegistered import insert_eth_registrar_controller_event_name_registered
+from database.event.EthRegistrarController.NameRenewed import insert_eth_registrar_controller_event_name_renewed
+from database.event.EthRegistrarController.NewPriceOracle import insert_eth_registrar_controller_event_new_price_oracle
+from database.event.EthRegistrarController.OwnershipTransferred import \
     insert_eth_registrar_controller_event_ownership_transferred
 from processEvent.ProcessEventImpl import ProcessEventImpl
 
@@ -76,6 +78,9 @@ def process_event_helper(block_when: datetime.datetime,
 
 
 class ETHRegistrarControllerProcessEvent(ProcessEventImpl):
+
+    def __repr__(self):
+        return "ETHRegistrarControllerProcessEvent"
 
     def get_process_event_data(self,
                                block_when: datetime.datetime,
