@@ -11,7 +11,8 @@ def insert_domain_info(network_id,
                        owner,
                        cost,
                        expires,
-                       base_node_index):
+                       base_node_index,
+                       timestamp):
     """
 
     :return:
@@ -28,11 +29,12 @@ def insert_domain_info(network_id,
             name,
             base_node_index,
             owner,
-            expires
+            expires,
+            timestamp
             ) 
-        VALUES (%s,%s,%s,%s,%s,%s,%s)
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
         """
-    param = (get_uuid(), network_id, label, name, base_node_index, owner, expires)
+    param = (get_uuid(), network_id, label, name, base_node_index, owner, expires, timestamp)
 
     try:
 

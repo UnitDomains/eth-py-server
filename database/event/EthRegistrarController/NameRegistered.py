@@ -70,7 +70,8 @@ def insert_eth_registrar_controller_event_name_registered(block_number,
                                owner,
                                cost,
                                expires,
-                               baseNodeIndex, )
+                               baseNodeIndex,
+                               timestamp)
 
     except Exception as e:
         print("insert_eth_registrar_controller_event_name_registered")
