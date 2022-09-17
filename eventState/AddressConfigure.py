@@ -14,6 +14,8 @@ class AddressConfigure:
             items = con.items('address_ropsten')
         elif network_id == 4:
             items = con.items('address_rinkeby')
+        elif network_id == 5:
+            items = con.items('address_goerli')
 
         self.items = dict(items)
 

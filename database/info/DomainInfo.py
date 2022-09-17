@@ -417,6 +417,11 @@ def get_domain_info_record(network_id,
 
 
 def removeExpiredDomain(network_id):
+    '''
+    Clear expired domain names
+    :param network_id:
+    :return:
+    '''
     GRACE_PERIOD = 86400 * 90
     time_stamp = time.time() - GRACE_PERIOD
 

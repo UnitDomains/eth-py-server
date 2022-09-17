@@ -40,9 +40,6 @@ With the stateful mechanism, you can do one batch scan or incremental scans,
 where events are added wherever the scanner left off.
 """
 
-# 当使用web3.py接入采用POA共识的以太坊节点时，可能会出现错误The field extraData is 97 bytes, but should be 32...
-# 当使用Ropston网络时没有问题，但是Rinkeby则会出现问题
-
 if __name__ == "__main__":
 
     # Simple demo that scans all the token transfers of RCC token (11k).
@@ -59,7 +56,7 @@ if __name__ == "__main__":
 
     # mainnet
     api_url_mainnet = "https://ropsten.infura.io/v3/ec2d05b145c1443c9cca09393955e37c"
-    api_url_mainnet_alchemy = "https://eth-mainnet.alchemyapi.io/v2/CD0O0kdHXToHSvaQrPvN5xRAUTRg0e6_"
+    api_url_mainnet_alchemy = "https://eth-mainnet.g.alchemy.com/v2/fGQchzBmSuErGtnqYDDMXUL5z7vtmIWW"
 
     # rospten
     api_url_ropsten_infura = "https://ropsten.infura.io/v3/ec2d05b145c1443c9cca09393955e37c"
@@ -71,9 +68,9 @@ if __name__ == "__main__":
 
     # Goerli
     api_url_goerli_infura = "https://eth-goerli.alchemyapi.io/v2/ec2d05b145c1443c9cca09393955e37c"
-    api_url_goerli_alchemy = "https://eth-goerli.alchemyapi.io/v2/ot41xp6WbmRmqtDREro6ERragj2X7AGb"
+    api_url_goerli_alchemy = "https://eth-goerli.g.alchemy.com/v2/yXgQUExIdmz3UyMp4Ovhako4SXO_WyMt"
 
-    api_url = api_url_rinkeby_alchemy
+    api_url = api_url_mainnet_alchemy
 
     network_id = 0
     if api_url.find('mainnet') >= 0:
@@ -82,8 +79,8 @@ if __name__ == "__main__":
         network_id = 3
     elif api_url.find('rinkeby') >= 0:
         network_id = 4
-    elif api_url.find('rinkeby') >= 0:
-        network_id = 4
+    elif api_url.find('goerli') >= 0:
+        network_id = 5
 
     # Enable logs to the stdout.
     # DEBUG is very verbose level
@@ -238,7 +235,12 @@ if __name__ == "__main__":
     removeExpiredDomain(network_id)
 
 
-    def APschedulerMonitor():
+    def ethSchedulerMonitor():
+        """
+        timer task
+        :return:
+        """
+
         scheduler = BlockingScheduler()
 
         # 120S
@@ -256,6 +258,6 @@ if __name__ == "__main__":
         scheduler.start()
 
 
-    APschedulerMonitor()
+    ethSchedulerMonitor()
 
     close_database()
